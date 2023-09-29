@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sql_project2/services/models/stock_datamodel.dart';
 import 'package:sql_project2/services/program_provider.dart';
 import 'package:sql_project2/pages/stock_add/stock_popup.dart';
 
+import '../../services/invest_provider.dart';
 import 'stock_datacard.dart';
 class Stocks extends StatefulWidget {
-  const Stocks({Key? key}) : super(key: key);
+  final String portfolioTitle;
+  const Stocks({Key? key, required this.portfolioTitle}) : super(key: key);
 
   @override
   State<Stocks> createState() => _StocksState();
@@ -14,11 +17,19 @@ class Stocks extends StatefulWidget {
 class _StocksState extends State<Stocks> {
   @override
   Widget build(BuildContext context) {
-    ProgramProvider programProvider = Provider.of<ProgramProvider>(context);
+    InvestProvider investProvider = Provider.of<InvestProvider>(context);
+    List<StockDataModel> stockList = investProvider.getStockHistoryByPortfolio(widget.portfolioTitle);
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: (){
+            Navigator.pop(context);
+            investProvider.getData();
+          },
+        ),
         scrolledUnderElevation: 0,
-        title: Text("Hisse al/sat"),
+        title: const Text("Hisse al/sat"),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blue,
@@ -26,14 +37,14 @@ class _StocksState extends State<Stocks> {
         onPressed: () =>
             showDialog<String>(
                 context: context,
-                builder: (BuildContext context) => const StockPopUp()
+                builder: (BuildContext context) => StockPopUp(title: widget.portfolioTitle,)
             ),
         child: const Icon(Icons.add),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          programProvider.stockList.isEmpty
+          stockList.isEmpty
               ? Align(alignment: Alignment.center,
               child: Text("Gelirlerinizi buraya girin",
                 style: TextStyle(fontSize: 15, color: Colors.grey[500]),))
@@ -41,14 +52,14 @@ class _StocksState extends State<Stocks> {
             child: Align(
               alignment: Alignment.topCenter,
               child: ListView.builder(
-                itemCount: programProvider.stockList.length,
+                itemCount: stockList.length,
                 scrollDirection: Axis.vertical,
                 shrinkWrap: true,
                 physics: const BouncingScrollPhysics(),
                 itemBuilder: (context, index) {
-                  int reverse = programProvider.stockList.length - 1 - index;
+                  int reverse = stockList.length - 1 - index;
                   return StockDataCard(
-                    data: programProvider.stockList[reverse],
+                    data: stockList[reverse],
                     index: reverse,
                   );
                 },

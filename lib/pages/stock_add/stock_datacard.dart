@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
-
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
-import 'package:sql_project2/services/models/income_data_model.dart';
 import 'package:sql_project2/services/models/stock_datamodel.dart';
-
-import '../../services/program_provider.dart';
+import '../../services/invest_provider.dart';
 class StockDataCard extends StatefulWidget {
   const StockDataCard({
     Key? key,
@@ -31,7 +28,7 @@ class _StockDataCardState extends State<StockDataCard> {
   Widget build(BuildContext context) {
     String dayDate = DateFormat.d('tr').format(widget.data.date);
     String trdate = DateFormat.MMM('tr').format(widget.data.date);
-    ProgramProvider programProvider = Provider.of<ProgramProvider>(context);
+    InvestProvider programProvider = Provider.of<InvestProvider>(context);
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: Padding(
@@ -39,47 +36,27 @@ class _StockDataCardState extends State<StockDataCard> {
         child: Card(
           //margin: const EdgeInsets.only(bottom: 6.0), //Same
           child: Slidable(
-            startActionPane: ActionPane(
-              motion: const ScrollMotion(),
-              children: [
-                SlidableAction(
-                  onPressed: (BuildContext context){
-                    programProvider.deleteFromStockList(widget.data);
-                  },
-                  backgroundColor: const Color(0xFFFE4A49),
-                  foregroundColor: Colors.white,
-                  icon: Icons.delete,
-                  label: 'Delete',
-                ),
-                SlidableAction(
-                  onPressed: (BuildContext context){},
-                  backgroundColor: const Color(0xFF0392CF),
-                  foregroundColor: Colors.white,
-                  icon: Icons.share,
-                  label: 'Edit',
-                ),
-              ],
-            ),
 
             endActionPane: ActionPane(
-              motion: const ScrollMotion(),
+              motion: const DrawerMotion(),
               children: [
                 SlidableAction(
                   onPressed: (BuildContext context){
+                    showSnackBar(context, "Silme işlemi başarılı",widget.data);
                     programProvider.deleteFromStockList(widget.data);
                   },
                   backgroundColor: const Color(0xFFFE4A49),
                   foregroundColor: Colors.white,
                   icon: Icons.delete,
-                  label: 'Delete',
+                  label: 'Sil',
                 ),
                 SlidableAction(
                   onPressed: (BuildContext context){
                   },
                   backgroundColor:const  Color(0xFF0392CF),
                   foregroundColor: Colors.white,
-                  icon: Icons.save,
-                  label: 'Edit',
+                  icon: Icons.edit,
+                  label: 'Düzenle',
                 ),
               ],
             ),
@@ -92,15 +69,15 @@ class _StockDataCardState extends State<StockDataCard> {
                 child: Row(
                   children: <Widget>[
                     Container(
-                        color: widget.data.amount >= 0 ? Colors.green: Colors.red,
+                        color: widget.data.amount >= 0 ? Colors.greenAccent: Colors.redAccent,
                         width: 60,
                         height: 70,
                         child: Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text(dayDate,style: TextStyle(fontSize: 18),),
-                                Text(trdate, style: TextStyle(fontSize: 18),)
+                                Text(dayDate,style: const TextStyle(fontSize: 18),),
+                                Text(trdate, style: const TextStyle(fontSize: 18),)
                               ],
                             )
                         )
@@ -117,7 +94,6 @@ class _StockDataCardState extends State<StockDataCard> {
                           widget.data.amount > 0 ?
                           Text("Alım fiyatı ${widget.data.price.toStringAsFixed(2)}₺"):
                           Text("Satım fiyatı ${widget.data.price.toStringAsFixed(2)}₺"),
-                          Text("${widget.data.amount.abs().toString()} adet")
                         ],
                       ),
                     ),
@@ -126,7 +102,7 @@ class _StockDataCardState extends State<StockDataCard> {
                       child: Column(
                         children: [
                           Text("₺${(widget.data.amount*widget.data.price).toStringAsFixed(2)}", style: const TextStyle(fontSize: 16),),
-                          Text(widget.data.portfolio, style: const TextStyle(fontSize: 16),)
+                          Text("${widget.data.amount.abs().toString()} adet")
                         ],
                       ),
                     ),
@@ -139,4 +115,33 @@ class _StockDataCardState extends State<StockDataCard> {
       ),
     );
   }
+}
+
+void showSnackBar(BuildContext context, String text, StockDataModel data) {
+  InvestProvider investProvider = Provider.of<InvestProvider>(context, listen: false);
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 5),
+        behavior: SnackBarBehavior.floating,
+        elevation: 5,
+        backgroundColor: Colors.white,
+        content: Text(text,style: const TextStyle(color: Colors.blue),),
+        duration: const Duration(seconds: 8),
+        animation: CurvedAnimation(
+          parent: const AlwaysStoppedAnimation<double>(1),
+          curve: Curves.fastOutSlowIn,
+        ),
+        action: SnackBarAction(
+          textColor: Colors.red,
+          label: 'Geri Al',
+          onPressed: () {
+            investProvider.addToStockList(data);
+          },
+        )
+
+    ),
+  );
 }

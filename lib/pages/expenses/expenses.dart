@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sql_project2/pages/income/showPopupGelirPage.dart';
+import 'package:sql_project2/pages/expenses/add_income.dart';
 import 'package:sql_project2/services/models/expense_data_model.dart';
 import '../../services/program_provider.dart';
 import '../month/months.dart';
+import '../navbars/navigation_drawer.dart';
 import 'expense_datacard.dart';
-import 'package:sql_project2/pages/expenses/showPopupExpenses.dart';
+import 'package:sql_project2/pages/expenses/add_expense.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 class Expenses extends StatefulWidget {
@@ -20,6 +21,7 @@ class _ExpensesState extends State<Expenses> {
     ProgramProvider programProvider = Provider.of<ProgramProvider>(context);
     List<ExpenseDataModel> expenses = programProvider.expenseList;
     return Scaffold(
+      //drawer: const NavDraw(),
       appBar: AppBar(
         title: Text("Gelir/Gider"),
         centerTitle: true,
@@ -73,7 +75,7 @@ class _ExpensesState extends State<Expenses> {
             label: 'Gelir',
             onTap: () => showDialog<String>(
                 context: context,
-                builder: (BuildContext context) => const ShowPopUpGelirPage()
+                builder: (BuildContext context) => const AddIncome()
             ),
           ),
           SpeedDialChild(
@@ -82,7 +84,7 @@ class _ExpensesState extends State<Expenses> {
             label: 'Gider',
             onTap: () => showDialog<String>(
                 context: context,
-                builder: (BuildContext context) => const ShowPopUpHomePage()
+                builder: (BuildContext context) => const AddExpense()
             ),
           )
         ],

@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:sql_project2/services/models/expense_data_model.dart';
 import 'package:sql_project2/services/program_provider.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:sql_project2/pages/expenses/showPopUpExpensesUpdate.dart';
+import 'package:sql_project2/pages/expenses/edit_expense.dart';
 
 class CategoriesDataCard extends StatefulWidget {
   const CategoriesDataCard({

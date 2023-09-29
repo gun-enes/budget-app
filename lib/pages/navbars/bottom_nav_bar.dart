@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:sql_project2/pages/expenses/expenses.dart';
-import 'package:sql_project2/pages/navbars/topnav%20hisseler.dart';
-import 'package:sql_project2/pages/navbars/topnav.dart';
-import 'package:sql_project2/pages/portfolios/all_portfolios.dart';
-import 'package:sql_project2/services/program_provider.dart';
+import 'package:sql_project2/pages/portfolio_list/all_portfolios.dart';
 import '../alltime/alltime.dart';
-import '../month/months.dart';
 
 class NavigasyonBar extends StatefulWidget {
   const NavigasyonBar({Key? key}) : super(key: key);
@@ -18,14 +13,13 @@ class NavigasyonBar extends StatefulWidget {
 class _NavigasyonBarState extends State<NavigasyonBar> {
   PageController _pageController = PageController();
   List<Widget> pages = [
+    const AllPortfolios(),
     const AllTime(),
     const Expenses(),
-    const AllPortfolios()
   ];
   int currentIndex = 0;
   @override
   Widget build(BuildContext context) {
-    ProgramProvider programProvider = Provider.of<ProgramProvider>(context);
     return Scaffold(
       body: PageView(
         controller: _pageController,
@@ -38,9 +32,6 @@ class _NavigasyonBarState extends State<NavigasyonBar> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         onTap: (index){
-          if(index == 2){
-            programProvider.createPortfolio();
-          }
           _pageController.animateToPage(
               index,
               duration: Duration(milliseconds: 150),
@@ -54,20 +45,19 @@ class _NavigasyonBarState extends State<NavigasyonBar> {
         elevation: 5,
         items: const [
           BottomNavigationBarItem(
-              icon: Icon(Icons.home),
+              icon: Icon(Icons.book),
+              label: "Yatırım"
+          ),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.calendar_month),
               label: "AnaSayfa"
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.monetization_on_outlined),
             label: "Gelir-Gider",
           ),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.book),
-              label: "Yatırım"
-          ),
         ],
       ),
-
     );
   }
 }

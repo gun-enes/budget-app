@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:isar/isar.dart';
-import 'package:http/http.dart' as http;
-import 'package:html/dom.dart' as dom;
 import 'package:sql_project2/services/models/daily_data_model.dart';
 import 'package:sql_project2/services/models/expense_data_model.dart';
-import 'package:sql_project2/services/models/portfolio_datamodel.dart';
-import 'package:sql_project2/services/models/stock_datamodel.dart';
 import 'models/income_data_model.dart';
 import 'isar_services.dart';
 import 'models/monthly_data_model.dart';
@@ -20,27 +14,6 @@ class ProgramProvider extends ChangeNotifier {
   List<DailyDataModel> get dailyList => _dailyList;
   final List<MonthlyDataModel> _monthlyList = [];
   List<MonthlyDataModel> get monthlyList => _monthlyList;
-  final List<StockDataModel> _stockList = [];
-  List<StockDataModel> get stockList => _stockList;
-  final List<StockDataModel> _portfolio = [];
-  List<StockDataModel> get portfolio => _portfolio;
-  final List<String> _hisseisimleri = [];
-  List<String> get hisseisimleri => _hisseisimleri;
-  final List<String> _hissekodlari = [];
-  List<String> get hissekodlari => _hissekodlari;
-  final List<String> _hissedegisim = [];
-  List<String> get hissedegisim => _hissedegisim;
-  final List<String> _hissefiyati = [];
-  List<String> get hissefiyati => _hissefiyati;
-  final List<PortfolioDataModel> _portfolioList = [];
-  List<PortfolioDataModel> get portfolioList => _portfolioList;
-  final List<ExpenseDataModel> _expenseCategories = [];
-  List<ExpenseDataModel> get expenseCategories => _expenseCategories;
-/*
-  double _portfolioValue = 0;
-  double get portfolioValue => _portfolioValue;
-  double _portfolioProfit = 0;
-  double get portfolioProfit => _portfolioProfit;*/
 
   int _limit = 200;
   int get limit => _limit;
@@ -49,114 +22,28 @@ class ProgramProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future getData() async {
-    _hissekodlari.clear();
-    _hisseisimleri.clear();
-    _hissefiyati.clear();
-    _hissedegisim.clear();
-    final url = Uri.parse('https://bigpara.hurriyet.com.tr/doviz/dolar/');
-    final url1 = Uri.parse('https://www.oyakyatirim.com.tr/piyasa-verileri/XUTUM');
-    final response = await http.get(url);
-    final response1 = await http.get(url1);
-    dom.Document html = dom.Document.html(response.body);
-    dom.Document html1 = dom.Document.html(response1.body);
-    final titles = html.querySelectorAll('span.value.up').map((e) => e.innerHtml.trim()).toList();
-    final titles1 = html1.querySelectorAll('table > tbody > tr > td').map((e) => e.innerHtml.trim()).toList();
-    for(int i = 18; i < titles1.length-3;i = i + 10) {
-      if(titles1[i][26] == "\"") {
-        _hissekodlari.add(titles1[i].substring(22,26));
-      } else {
-        _hissekodlari.add(titles1[i].substring(22,27));
-      }
-      _hisseisimleri.add(titles1[i+1]);
-      _hissefiyati.add(titles1[i+2]);
-      _hissedegisim.add(titles1[i+6]);
-    }
-    notifyListeners();
+  void showSnackBar(BuildContext context, String text) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 25),
+          behavior: SnackBarBehavior.floating,
+          elevation: 5,
+          backgroundColor: Colors.white,
+          content: Text(text,style: TextStyle(color: Colors.blue),),
+          duration: const Duration(seconds: 4),
+          animation: CurvedAnimation(
+            parent: const AlwaysStoppedAnimation<double>(1),
+            curve: Curves.fastOutSlowIn,
+          ),
+      ),
+    );
   }
-  //HELPERS
-  double returnPrice(String name){
-    for(int i = 0; i<hissekodlari.length; i++){
-      if(hissekodlari[i] == name.toUpperCase()){
-        String replaced = hissefiyati[i].replaceAll(',', '.');
-        return double.parse(replaced);
-      }
-    }
-    return 0;
-  }
-  bool returnName(String name){
-    for(int i = 0; i<hissekodlari.length; i++){
-      if(hissekodlari[i] == name.toUpperCase()){
-        return true;
-      }
-    }
-    return false;
-  }
-  double returnValue(){
-    double total = 0;
-    for(final para in portfolio){
-      if(para.portfolio.toUpperCase() != "BABAM")
-        total += returnPrice(para.title)*para.amount;
-    }
-    return total;
-  }
-  double returnProfit(){
-    double total = 0;
-    for(final para in portfolio){
-      if(para.portfolio.toUpperCase() != "BABAM")
-        total += returnPrice(para.title)*para.amount-para.amount*para.price;
-    }
-    return total;
-  }
-  bool returnPortfolioName(String name){
-    for(int i = 0; i<portfolioList.length; i++){
-      if(portfolioList[i].title.toUpperCase() == name.toUpperCase()){
-        return true;
-      }
-    }
-    return false;
-  }
-  double returnPortfolioValue(String name){
-    double total = 0;
-    for(final para in portfolio){
-      if(para.portfolio.toUpperCase() == name.toUpperCase()) {
-        total += returnPrice(para.title)*para.amount;
-      }
-    }
-    return total;
-  }
-  double returnPortfolioProfit(String name){
-    double total = 0;
-    for(final para in portfolio){
-      if(para.portfolio.toUpperCase() == name.toUpperCase()) {
-        total += returnPrice(para.title)*para.amount-para.amount*para.price;
-      }
-    }
-    return total;
-  }
-  //STOCKS
-  void addToStockList(StockDataModel newData){
-    /*for(int i = 0; i<_stockList.length; i++){
-      if(stockList[i].title == newData.title){
-        stockList[i].price
-        IsarService().updateStock(stockList[i], newData);
-        return;
-      }
-    }*/
-    stockList.add(newData);
-    IsarService().addStock(newData);
-    notifyListeners();
-  }
-  void deleteFromStockList(StockDataModel newData){
-    stockList.remove(newData);
-    IsarService().deleteStock(newData.id);
-    notifyListeners();
-  }
-  void changeStockList(List<StockDataModel> incomes){
-    _stockList.clear();
-    _stockList.addAll(incomes);
-    notifyListeners();
-  }
+
+
+
   //INCOME
   void updateIncome(int amount, String title, IncomeDataModel data){
     data.amount = amount;
@@ -178,6 +65,18 @@ class ProgramProvider extends ChangeNotifier {
     _incomeList.addAll(incomes);
     notifyListeners();
   }
+  /*int incomeListTotal(){
+    int alim = 0;
+    int satim = 0;
+    for(final item in _incomeList){
+      if(item.title == "Hisse alım"){
+        alim += item.amount;
+      }
+      if(item.title == "Hisse satım"){
+        satim += item.amount;
+      }
+    }
+  }*/
   //EXPENSES
   void addToExpenseList(ExpenseDataModel newData){
     IsarService().addExpense(newData);
@@ -198,9 +97,6 @@ class ProgramProvider extends ChangeNotifier {
     _expenseList.addAll(expenses);
     notifyListeners();
   }
-
-
-
   List<ExpenseDataModel> getExpenseByKind(List<ExpenseDataModel> exp) {
     bool control = true;
     List<ExpenseDataModel> expCat = [];
@@ -231,13 +127,30 @@ class ProgramProvider extends ChangeNotifier {
           temp = _tempExpenseCat[j];
         }
       }
-      print(temp);
       expCat.add(temp);
       _tempExpenseCat.remove(temp);
+    }/*
+    int a = 0,b = 0;
+    for(final item in expCat){
+      if(item.title == "Hisse alım"){
+        a = item.amount;
+        //expCat.remove(item);
+      }
+      if(item.title == "Hisse satım"){
+        b = item.amount;
+        //expCat.remove(item);
+      }
     }
+    expCat.removeWhere((element) => element.title == "Hisse alım" || element.title == "Hisse satım");
+    if(a != 0 && a - b > 0){
+      expCat.add(ExpenseDataModel()..amount = b - a..title = "Hisse zararı"..date = DateTime.now()..type = "Expense");
+
+    }
+    else if(a != 0 && a - b < 0){
+      expCat.add(ExpenseDataModel()..amount = b - a..title = "Hisse karı"..date = DateTime.now()..type = "Income");
+    }*/
     return expCat;
   }
-
   List<ExpenseDataModel> getExpenseByMonth(List<ExpenseDataModel> exp, DateTime date) {
     List<ExpenseDataModel> items = exp.where((item) {
       return item.date.year == date.year && item.date.month == date.month;
@@ -269,19 +182,6 @@ class ProgramProvider extends ChangeNotifier {
     _monthlyList.add(newData);
     notifyListeners();
   }
-/*
-  void update(){
-    for(int i = 0; i < _incomeList.length; i++) {
-      ExpenseDataModel k = ExpenseDataModel()
-        ..amount = _incomeList[i].amount
-        ..date = _incomeList[i].date
-        ..title = _incomeList[i].title
-        ..type = "Income";
-      addToExpenseList(k);
-    }
-  }
-*/
-
   void deleteMonth(MonthlyDataModel data){
     IsarService().deleteMonthly(data.id);
     _monthlyList.remove(data);
@@ -292,80 +192,6 @@ class ProgramProvider extends ChangeNotifier {
     _monthlyList.addAll(monthly);
     notifyListeners();
   }
-  //PORTFOLIO
-  void addToPortfolioList(PortfolioDataModel newData){
-    IsarService().addPortfolio(newData);
-    _portfolioList.add(newData);
-    notifyListeners();
-  }
-  void deletePortfolioList(PortfolioDataModel newData){
-    IsarService().deletePortfolio(newData.id);
-    _portfolioList.remove(newData);
-    notifyListeners();
-  }
-  void changePortfolioList(List<PortfolioDataModel> portfolios) {
-    _portfolioList.clear();
-    _portfolioList.addAll(portfolios);
-    notifyListeners();
-  }
-  void clearPortfolio(){
-    _portfolio.clear();
-    notifyListeners();
-  }
-  void createPortfolio(){
-    _portfolio.clear();
-    bool control = true;
-    for(int i = 0; i < _stockList.length; i++){
-      for(int j = 0; j< _portfolio.length; j++){
-        if(_stockList[i].title == _portfolio[j].title && _stockList[i].portfolio == _portfolio[j].portfolio){
-          if(_stockList[i].amount>0) {
-            _portfolio[j].price = (_portfolio[j].amount*_portfolio[j].price + _stockList[i].amount*_stockList[i].price)/(_portfolio[j].amount + _stockList[i].amount);
-          }
-          _portfolio[j].amount += _stockList[i].amount;
-          if(_portfolio[j].amount == 0){
-            _portfolio.remove(_portfolio[j]);
-          }
-          control = false;
-          break;
-        }
-      }
-      if(control) {
-        _portfolio.add(StockDataModel()
-          ..price = _stockList[i].price
-          ..title = _stockList[i].title
-          ..amount = _stockList[i].amount
-          ..portfolio = _stockList[i].portfolio
-          ..date = _stockList[i].date
-        );
-      }
-      control = true;
-    }
-    notifyListeners();
-  }
-  double returnCost(String stockName){
-    for(final item in _stockList){
-      if(item.title.toUpperCase() == stockName.toUpperCase()){
-        return item.price;
-      }
-    }
-    return 0;
-  }
-  int returnStockInPortfolio(String portfolioName, String stockName){
-
-    List<StockDataModel> items = _portfolio.where((item) {
-      return item.portfolio.toUpperCase() == portfolioName.toUpperCase() && item.title.toUpperCase() == stockName.toUpperCase();
-    }).toList();
-    return items.length == 0 ? 0:items[0].amount;
-  }
-  List<StockDataModel> getStocksByPortfolio(String name) {
-    List<StockDataModel> items = _portfolio.where((item) {
-      return item.portfolio.toUpperCase() == name.toUpperCase();
-    }).toList();
-    return items;
-  }
-
-
-
 
 
   void deleteall(){
@@ -440,9 +266,10 @@ class ProgramProvider extends ChangeNotifier {
   int incomeCurrentMonth(){
     int toplam = 0;
     for(final para in _expenseList){
-      if(para.type == "Income")
-      if(para.date.month == DateTime.now().month) {
-        toplam += para.amount;
+      if(para.type == "Income") {
+        if (para.date.month == DateTime.now().month) {
+          toplam += para.amount;
+        }
       }
     }
     return toplam;

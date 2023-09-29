@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sql_project2/services/models/stock_datamodel.dart';
+import '../../services/invest_provider.dart';
 import '../../services/program_provider.dart';
 class PortfolioDataCard extends StatefulWidget {
   const PortfolioDataCard({
@@ -18,7 +19,7 @@ class PortfolioDataCard extends StatefulWidget {
 class _PortfolioDataCardState extends State<PortfolioDataCard> {
   @override
   Widget build(BuildContext context) {
-    ProgramProvider programProvider = Provider.of<ProgramProvider>(context);
+    InvestProvider investProvider = Provider.of<InvestProvider>(context);
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: Padding(
@@ -33,8 +34,8 @@ class _PortfolioDataCardState extends State<PortfolioDataCard> {
                 children: <Widget>[
                   CircleAvatar(
                     radius: 25,
-                    backgroundColor: programProvider.returnPrice(widget.data.title) > widget.data.price ? Colors.greenAccent: Colors.redAccent,
-                    child: programProvider.returnPrice(widget.data.title) > widget.data.price ? const Icon(Icons.keyboard_arrow_up_rounded):const Icon(Icons.keyboard_arrow_down_rounded),
+                    backgroundColor: investProvider.returnPrice(widget.data.title) > widget.data.price ? Colors.greenAccent: Colors.redAccent,
+                    child: investProvider.returnPrice(widget.data.title) > widget.data.price ? const Icon(Icons.keyboard_arrow_up_rounded):const Icon(Icons.keyboard_arrow_down_rounded),
                   ),
                   Expanded(
                     child: Padding(
@@ -44,7 +45,12 @@ class _PortfolioDataCardState extends State<PortfolioDataCard> {
                         crossAxisAlignment:
                         CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text(widget.data.title.toUpperCase(), style: const TextStyle(fontSize: 20),),
+                          Row(
+                            children: [
+                              Text(widget.data.title.toUpperCase(), style: const TextStyle(fontSize: 20),),
+                              /*Text("(%${programProvider.returnChange(widget.data.title)})", style: TextStyle(color: programProvider.returnChange(widget.data.title) < 0 ? Colors.red : programProvider.returnChange(widget.data.title) == 0 ? Colors.grey : Colors.green),)*/
+                            ],
+                          ),
                           Text("Adet: ${widget.data.amount.abs().toString()}"),
                           Text("Maliyet: ${widget.data.price.toStringAsFixed(2)}TL"),
                           //Text("${widget.data.price.toStringAsFixed(2)}TL")
@@ -60,11 +66,17 @@ class _PortfolioDataCardState extends State<PortfolioDataCard> {
                         crossAxisAlignment:
                         CrossAxisAlignment.end,
                         children: [
-                          Text((programProvider.returnPrice(widget.data.title)*widget.data.amount).toStringAsFixed(2), style: const TextStyle(fontSize: 20),),
-                          programProvider.returnPrice(widget.data.title) > widget.data.price ?
-                          Text("%${(100*((programProvider.returnPrice(widget.data.title)-widget.data.price)/widget.data.price)).toStringAsFixed(2)} (+${(programProvider.returnPrice(widget.data.title)*widget.data.amount-widget.data.amount*widget.data.price).toStringAsFixed(2)})", overflow: TextOverflow.ellipsis, maxLines: 1, style: const TextStyle(color: Colors.green),):
-                          Text("-%${(-100*((programProvider.returnPrice(widget.data.title)-widget.data.price)/widget.data.price)).toStringAsFixed(2)} (${(programProvider.returnPrice(widget.data.title)*widget.data.amount-widget.data.amount*widget.data.price).toStringAsFixed(2)})",overflow: TextOverflow.ellipsis, maxLines: 1, style: const TextStyle(color: Colors.redAccent),),
-                          Text("Son fiyat: ${(programProvider.returnPrice(widget.data.title)).toStringAsFixed(2)}TL",),
+                          Text((investProvider.returnPrice(widget.data.title)*widget.data.amount).toStringAsFixed(2), style: const TextStyle(fontSize: 20),),
+                          investProvider.returnPrice(widget.data.title) > widget.data.price ?
+                          Text("%${(100*((investProvider.returnPrice(widget.data.title)-widget.data.price)/widget.data.price)).toStringAsFixed(2)} (+${(investProvider.returnPrice(widget.data.title)*widget.data.amount-widget.data.amount*widget.data.price).toStringAsFixed(2)})", overflow: TextOverflow.ellipsis, maxLines: 1, style: const TextStyle(color: Colors.green),):
+                          Text("-%${(-100*((investProvider.returnPrice(widget.data.title)-widget.data.price)/widget.data.price)).toStringAsFixed(2)} (${(investProvider.returnPrice(widget.data.title)*widget.data.amount-widget.data.amount*widget.data.price).toStringAsFixed(2)})",overflow: TextOverflow.ellipsis, maxLines: 1, style: const TextStyle(color: Colors.redAccent),),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text("Fiyat: ${(investProvider.returnPrice(widget.data.title)).toStringAsFixed(2)}",),
+                              /*Text("(%${programProvider.returnChange(widget.data.title)})", style: TextStyle(color: programProvider.returnChange(widget.data.title) < 0 ? Colors.red : programProvider.returnChange(widget.data.title) == 0 ? Colors.grey : Colors.green),)*/
+                            ],
+                          ),
                         ],
                       ),
                     ),

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sql_project2/services/models/stock_datamodel.dart';
-import 'package:sql_project2/services/program_provider.dart';
 import 'package:sql_project2/pages/portfolios/portfolio_datacard.dart';
+
+import '../../services/invest_provider.dart';
+import '../stock_add/stocks.dart';
 
 class Portfolio extends StatefulWidget {
   final String portfolioTitle;
@@ -16,8 +18,8 @@ class _PortfolioState extends State<Portfolio> {
 
   @override
   Widget build(BuildContext context) {
-    ProgramProvider programProvider = Provider.of<ProgramProvider>(context);
-    List<StockDataModel> stockList = programProvider.getStocksByPortfolio(widget.portfolioTitle);
+    InvestProvider investProvider = Provider.of<InvestProvider>(context);
+    List<StockDataModel> stockList = investProvider.getStocksByPortfolio(widget.portfolioTitle);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.portfolioTitle.toUpperCase()),
@@ -34,28 +36,47 @@ class _PortfolioState extends State<Portfolio> {
               color: Theme.of(context).cardColor,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Text("Portföy Değeri",style: TextStyle(fontSize: 16),),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Text("Nakit",style: TextStyle(fontSize: 16),),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Text("Portföy Değeri",style: TextStyle(fontSize: 16),),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text("${(investProvider.returnPortfolioValue(widget.portfolioTitle)).toStringAsFixed(2)}", style: const TextStyle(fontSize: 20),),
+                          Text(" %${(100*investProvider.returnPortfolioProfit(widget.portfolioTitle)/(investProvider.returnPortfolioValue(widget.portfolioTitle) - investProvider.returnPortfolioProfit(widget.portfolioTitle))).toStringAsFixed(2)} (+${investProvider.returnPortfolioProfit(widget.portfolioTitle).toStringAsFixed(2)})",style: TextStyle(fontSize: 20, color: investProvider.returnPortfolioProfit(widget.portfolioTitle) > 0 ? Colors.green: Colors.red))
+                        ],
+                      ),
+                    ),
+                    ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(Colors.blueAccent),
+                      ),
+                        onPressed:  (){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => Stocks(portfolioTitle: widget.portfolioTitle,)),
+                          );
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.all(8.0),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            mainAxisSize: MainAxisSize.min,
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text("${(programProvider.returnPortfolioValue(widget.portfolioTitle)).toStringAsFixed(2)}", style: const TextStyle(fontSize: 20),),
-                              Text(" %${(100*programProvider.returnPortfolioProfit(widget.portfolioTitle)/(programProvider.returnPortfolioValue(widget.portfolioTitle) - programProvider.returnPortfolioProfit(widget.portfolioTitle))).toStringAsFixed(2)} (+${programProvider.returnPortfolioProfit(widget.portfolioTitle).toStringAsFixed(2)})",style: TextStyle(fontSize: 20, color: programProvider.returnPortfolioProfit(widget.portfolioTitle) > 0 ? Colors.green: Colors.red))
+                              Text("Hisse al/sat",style: TextStyle(fontSize: 16,color: Colors.white),),
                             ],
-                          ),
-                        ),
-                      ],
+                          ),),
                     ),
                   ],
                 ),
@@ -66,7 +87,7 @@ class _PortfolioState extends State<Portfolio> {
             child: Align(
               alignment: Alignment.topCenter,
               child: RefreshIndicator(
-                onRefresh: programProvider.getData,
+                onRefresh: investProvider.getData,
                 child: ListView.builder(
                   itemCount: stockList.length,
                   scrollDirection: Axis.vertical,

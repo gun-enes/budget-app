@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sql_project2/pages/hisseler.dart';
-import 'package:sql_project2/pages/portfolios/all_portfolios.dart';
+import 'package:sql_project2/pages/portfolio_list/all_portfolios.dart';
 import 'package:sql_project2/pages/portfolios/portfolio.dart';
 
 class StockTopNav extends StatelessWidget {

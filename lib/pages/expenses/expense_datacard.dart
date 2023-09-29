@@ -6,7 +6,9 @@ import 'package:provider/provider.dart';
 import 'package:sql_project2/services/models/expense_data_model.dart';
 import 'package:sql_project2/services/program_provider.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:sql_project2/pages/expenses/showPopUpExpensesUpdate.dart';
+import 'package:sql_project2/pages/expenses/edit_expense.dart';
+
+import 'edit_income.dart';
 
 class ExpenseDataCard extends StatefulWidget {
   const ExpenseDataCard({
@@ -39,56 +41,41 @@ class _ExpenseDataCardState extends State<ExpenseDataCard> {
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: Card(
             child: Slidable(
-            startActionPane: ActionPane(
-              motion: const ScrollMotion(),
-              children: [
-                SlidableAction(
-                  onPressed: (BuildContext context){
-                    programProvider.deleteExpense(widget.data);
-                  },
-                  backgroundColor: const Color(0xFFFE4A49),
-                  foregroundColor: Colors.white,
-                  icon: Icons.delete,
-                  label: 'Delete',
-                ),
-                SlidableAction(
-                  onPressed: (BuildContext context) => showDialog<String>(
-                        context: context,
-                        builder: (BuildContext context) => ShowPopUpHomePageUpdate(expenseDataModel: widget.data,)
-                    ),
-                  backgroundColor: const Color(0xFF0392CF),
-                  foregroundColor: Colors.white,
-                  icon: Icons.share,
-                  label: 'Edit',
-                ),
-              ],
-            ),
-
             endActionPane: ActionPane(
               motion: const ScrollMotion(),
               children: [
                 SlidableAction(
                   onPressed: (BuildContext context){
                     programProvider.deleteExpense(widget.data);
+                    showSnackBar(context, "Silme işlemi başarılı",widget.data);
                   },
                   backgroundColor: const Color(0xFFFE4A49),
                   foregroundColor: Colors.white,
                   icon: Icons.delete,
-                  label: 'Delete',
+                  label: 'Sil',
                 ),
                 SlidableAction(
-                  onPressed: (BuildContext context)=> showDialog<String>(
+                  onPressed: (BuildContext context){
+                    showDialog(
                       context: context,
-                      builder: (BuildContext context) => ShowPopUpHomePageUpdate(expenseDataModel: widget.data,)
-                  ),
+                      builder: (BuildContext context) {
+                        if(widget.data.type == "Expense"){
+                          return EditExpense(expenseDataModel: widget.data,);
+                        }
+                        else{
+                          return EditIncome(expenseDataModel: widget.data,);
+                        }
+                      },
+                    );
+                    programProvider.showSnackBar(context, "Düzenleme işlemi başarılı");
+                  },
                   backgroundColor: const Color(0xFF0392CF),
                   foregroundColor: Colors.white,
-                  icon: Icons.save,
-                  label: 'Edit',
+                  icon: Icons.edit,
+                  label: 'Düzenle',
                 ),
               ],
             ),
-
             child: Padding(
               padding: const EdgeInsets.fromLTRB(
               12.0,8.0, 12.0,8.0),
@@ -128,4 +115,34 @@ class _ExpenseDataCardState extends State<ExpenseDataCard> {
       ),
     );
   }
+}
+
+
+void showSnackBar(BuildContext context, String text, ExpenseDataModel data) {
+  ProgramProvider programProvider = Provider.of<ProgramProvider>(context, listen: false);
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 5),
+        behavior: SnackBarBehavior.floating,
+        elevation: 5,
+        backgroundColor: Colors.white,
+        content: Text(text,style: const TextStyle(color: Colors.blue),),
+        duration: const Duration(seconds: 4),
+        animation: CurvedAnimation(
+          parent: const AlwaysStoppedAnimation<double>(1),
+          curve: Curves.fastOutSlowIn,
+        ),
+        action: SnackBarAction(
+          textColor: Colors.red,
+          label: 'Geri Al',
+          onPressed: () {
+            programProvider.addToExpenseList(data);
+          },
+        )
+
+    ),
+  );
 }

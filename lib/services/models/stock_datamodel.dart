@@ -9,4 +9,6 @@ class StockDataModel {
   late double price;
   late String portfolio;
   late DateTime date;
+  late double bist;
+  late double dollar;
 }

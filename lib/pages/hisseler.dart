@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sql_project2/services/program_provider.dart';
 
+import '../services/invest_provider.dart';
+
 class Hisseler extends StatefulWidget {
   const Hisseler({Key? key}) : super(key: key);
 
@@ -12,7 +14,7 @@ class Hisseler extends StatefulWidget {
 class _HisselerState extends State<Hisseler> {
   @override
   Widget build(BuildContext context) {
-    ProgramProvider programProvider = Provider.of<ProgramProvider>(context);
+    InvestProvider programProvider = Provider.of<InvestProvider>(context);
     return Scaffold(
         appBar: AppBar(
           scrolledUnderElevation: 0,

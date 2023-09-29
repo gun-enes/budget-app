@@ -2,14 +2,12 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:sql_project2/pages/navbars/topnav%20hisseler.dart';
-import 'package:sql_project2/services/models/expense_data_model.dart';
+import 'package:sql_project2/services/invest_provider.dart';
 import 'package:sql_project2/services/program_provider.dart';
 import 'package:sql_project2/pages/alltime/day_datacard.dart';
-import '../hisseler.dart';
 import 'package:intl/date_symbol_data_local.dart';
-
 import 'categories.dart';
+
 class AllTime extends StatefulWidget {
   const AllTime({Key? key}) : super(key: key);
   @override
@@ -74,7 +72,24 @@ class _AllTimeState extends State<AllTime> {
   Widget build(BuildContext context) {
     ProgramProvider programProvider = Provider.of<ProgramProvider>(context);
     int x = programProvider.limit_outcome() - programProvider.sum_days();
+    InvestProvider investProvider = Provider.of<InvestProvider>(context);
     return Scaffold(
+      /*appBar: AppBar(
+        scrolledUnderElevation: 0,
+        title: Column(
+          children: [
+            Text("₺${(programProvider.sum_income()-programProvider.sum_outcome() + initialMoney - investProvider.returnValue() + investProvider.returnProfit()).toStringAsFixed(2)}",style: const TextStyle(fontSize: 28),),
+            Text("Bakiye", style: TextStyle(color: Colors.grey[500],fontWeight: FontWeight.w400,fontSize: 14),),
+          ],
+        ),
+        actions: [
+          IconButton(
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const Categories())),
+            icon: const Icon(Icons.bar_chart,),
+          ),
+        ],
+      ),*/
+      //drawer: const NavDraw(),
       resizeToAvoidBottomInset: false,
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Colors.blue,
@@ -94,11 +109,15 @@ class _AllTimeState extends State<AllTime> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     const SizedBox(width:  10,),
-                    Text("₺${programProvider.sum_income()-programProvider.sum_outcome() + initialMoney},00",style: const TextStyle(fontSize: 28),),
+                    Text("₺${(programProvider.sum_income()-programProvider.sum_outcome() + initialMoney - investProvider.returnValue() + investProvider.returnProfit()).toStringAsFixed(2)}",style: const TextStyle(fontSize: 28),),
                   ],
                 ),
                 Row(
                   children: [
+                    IconButton(
+                      onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const Categories())),
+                      icon: const Icon(Icons.bar_chart,),
+                    ),
                     IconButton(
                       onPressed: () => showDialog<String>(
                           context: context,

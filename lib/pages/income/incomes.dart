@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sql_project2/services/program_provider.dart';
 import 'income_datacard.dart';
-import 'showPopupGelirPage.dart';
+import '../expenses/add_income.dart';
 
 class Incomes extends StatefulWidget {
   const Incomes({Key? key}) : super(key: key);
@@ -23,7 +23,7 @@ class _IncomesState extends State<Incomes> {
         onPressed: () =>
             showDialog<String>(
                 context: context,
-                builder: (BuildContext context) => ShowPopUpGelirPage()
+                builder: (BuildContext context) => AddIncome()
             ),
         child: const Icon(Icons.add),
       ),

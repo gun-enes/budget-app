@@ -1,86 +1,50 @@
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sql_project2/services/models/expense_data_model.dart';
+import '../../services/invest_provider.dart';
 import '../../services/models/stock_datamodel.dart';
 import '../../services/program_provider.dart';
 
 class StockPopUp extends StatefulWidget {
-
-  const StockPopUp({Key? key}) : super(key: key);
+  final String title;
+  const StockPopUp({Key? key, required this.title}) : super(key: key);
 
   @override
   State<StockPopUp> createState() => _StockPopUpState();
 }
 
 class _StockPopUpState extends State<StockPopUp> {
-  final formGlobalKey = GlobalKey < FormState > ();
   final formGlobalKey2 = GlobalKey < FormState > ();
   final formGlobalKey3 = GlobalKey < FormState > ();
-  final formGlobalKey4 = GlobalKey < FormState > ();
   TextEditingController titleController = TextEditingController();
   TextEditingController amountController = TextEditingController();
   TextEditingController priceController = TextEditingController();
-  TextEditingController portfolioController = TextEditingController();
 
 
   @override
   Widget build(BuildContext context) {
+    InvestProvider investProvider = Provider.of<InvestProvider>(context);
     ProgramProvider programProvider = Provider.of<ProgramProvider>(context);
     bool controller = false;
+    titleController.text = investProvider.hissekodlari[0];
+    priceController.text = investProvider.returnPrice(titleController.text).toString();
     return AlertDialog(
       contentPadding: const EdgeInsets.all(14),
       content: SizedBox(
-        height: 270,
+        height: 190,
         child: Column(
           children: [
-            Form(
-              key: formGlobalKey,
-              child: TextFormField(
-                onTap: (){
-                  programProvider.createPortfolio();
-                },
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Bu alan boş bırakılamaz!';
-                  }
-                  else if(!programProvider.returnName(value)){
-                    return 'Geçerli bir hisse kodu giriniz!';
-                  }
-                  return null;
-                },
-                controller: titleController,
-                decoration: const InputDecoration(
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10))
-                    ),
-                    labelText: "Hisse Adı"
-                ),
+            DropdownSearch<String>(
+              popupProps: const PopupProps.dialog(
+                showSearchBox: true,
+                showSelectedItems: true
               ),
-            ),
-            const SizedBox(height: 10),
-            Form(
-              key: formGlobalKey4,
-              child: TextFormField(
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Bu alan boş bırakılamaz!';
-                  }
-                  else if(!programProvider.returnPortfolioName(value)){
-                    return 'Geçerli bir portfolyo giriniz!';
-                  }
-                  else if(programProvider.returnStockInPortfolio(portfolioController.text, titleController.text)  < int.parse(amountController.text) && controller){
-                    return 'Sahip olduğunuzdan fazlasını satamazsınız!';
-                  }
-                  return null;
-                },
-                controller: portfolioController,
-                decoration: const InputDecoration(
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10))
-                    ),
-                    labelText: "Portfolio Adı"
-                ),
-              ),
+              items: investProvider.hissekodlari,
+              onChanged: (value) {
+                titleController.text = value!;
+              },
+              selectedItem: investProvider.hissekodlari[0],
             ),
             const SizedBox(height: 10),
 
@@ -96,41 +60,75 @@ class _StockPopUpState extends State<StockPopUp> {
                         if (value!.isEmpty) {
                           return 'Bu alan boş bırakılamaz!';
                         }
+                        else if((investProvider.returnStockInPortfolio(widget.title, titleController.text) < int.parse(amountController.text)) && controller){
+                          controller = false;
+                          return 'Sahip olduğunuzdan fazlasını satamazsınız!';
+                        }
                         return null;
                       },
+                      style: TextStyle(fontSize: 16),
                       keyboardType: TextInputType.number,
                       controller: amountController,
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.all(Radius.circular(10))
                           ),
-                          labelText: "Miktar"
+                          labelText: "Miktar",
+                          labelStyle: TextStyle(fontSize: 16),
                       ),
                     ),
                   ),
                 ),
-                Form(
-                  key: formGlobalKey3,
-                  child: SizedBox(
-                    width: 122,
-                    child: TextFormField(
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return 'Bu alan boş bırakılamaz!';
-                        }
-                        return null;
-                      },
-                      keyboardType: TextInputType.number,
-                      controller: priceController,
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(10))
-                          ),
-                          labelText: "Fiyat"
+                investProvider.isChecked ? SizedBox(
+                  width: 122,
+                  child: TextField(
+                    style: TextStyle(fontSize: 16),
+                    keyboardType: TextInputType.number,
+                    controller: priceController,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10))
                       ),
+                      labelText: "Fiyat",
+                      labelStyle: TextStyle(fontSize: 16),
                     ),
                   ),
+                ):
+                SizedBox(
+                  width: 122,
+                  child: DropdownSearch<String>(
+                    //mode: Mode.MENU,
+                    popupProps: PopupProps.dialog(
+                      //showSearchBox: true,
+                      listViewProps: ListViewProps(
+                        itemExtent: 50,
+                        //scrollDirection: Axis.horizontal,
+                        controller: ScrollController(initialScrollOffset: 25*investProvider.lengthOfPriceList(investProvider.returnPrice(titleController.text))),
+                      ),
+                      showSelectedItems: true,
+                      //disabledItemFn: (String s) => s.startsWith('I'),
+                    ),
+                    items: List.generate(investProvider.lengthOfPriceList(investProvider.returnPrice(titleController.text)).toInt(), (index) => (investProvider.partOfPriceList(investProvider.returnPrice(titleController.text), index).toStringAsFixed(2))),
+                    onChanged: (value) {
+                      priceController.text = value!;
+                    },
+                    selectedItem: investProvider.returnPrice(titleController.text).toString(),
+                  ),
                 ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Checkbox(
+                  value: investProvider.isChecked,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      investProvider.isChecked = value!;
+                    });
+                  },
+                ),
+                Text('Onayla'),
               ],
             ),
           ],
@@ -140,61 +138,65 @@ class _StockPopUpState extends State<StockPopUp> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            TextButton(
+            ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
+              ),
               onPressed: () {
-                if (formGlobalKey.currentState!.validate()) {
-                  if(formGlobalKey4.currentState!.validate()) {
                     if (formGlobalKey2.currentState!.validate()) {
-                      if (formGlobalKey3.currentState!.validate()) {
                         final dataLocal = StockDataModel()
                           ..date = DateTime.now()
                           ..title = titleController.text
                           ..price = double.parse(priceController.text)
-                          ..portfolio = portfolioController.text
+                          ..portfolio = widget.title
                           ..amount = int.parse(amountController.text);
-                        programProvider.addToStockList(dataLocal);
+                        investProvider.addToStockList(dataLocal);
                         titleController.clear();
                         priceController.clear();
                         amountController.clear();
+                        programProvider.showSnackBar(context, "Alım işlemi başarılı");
                         Navigator.pop(context);
-                      }
                     }
-                  }
-                }
               },
-              child: const Center(child: Text("Al")),
+              child: const Padding(
+                padding:  EdgeInsets.symmetric(horizontal: 20.0),
+                child: Text("Al",style: TextStyle(fontSize: 15,color: Colors.white),),
+              ),
             ),
-            TextButton(
+            ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
+              ),
               onPressed: () {
-                if (formGlobalKey.currentState!.validate()) {
-                  if (formGlobalKey2.currentState!.validate()) {
-                    if (formGlobalKey3.currentState!.validate()) {
-                      controller = true;
-                      if (formGlobalKey4.currentState!.validate()){
+                controller = true;
+                if (formGlobalKey2.currentState!.validate()) {
                         final dataLocal = StockDataModel()
                           ..date = DateTime.now()
                           ..title = titleController.text
-                          ..portfolio = portfolioController.text
+                          ..portfolio = widget.title
                           ..price = double.parse(priceController.text)
+                          ..bist = double.parse(investProvider.bist.replaceAll(',', '.'))
+                          ..dollar = double.parse(investProvider.dollar.replaceAll(',', '.'))
                           ..amount = -int.parse(amountController.text);
                         final dataLocal2 = ExpenseDataModel()
                           ..type = "Income"
                           ..date = DateTime.now()
-                          ..amount = (int.parse(amountController.text)*(double.parse(priceController.text) - programProvider.returnCost(titleController.text))).toInt()
+                          ..amount = (int.parse(amountController.text)*(double.parse(priceController.text) - investProvider.returnCost(titleController.text))).toInt()
                           ..title = "Borsa";
                         programProvider.addToExpenseList(dataLocal2);
-                        programProvider.addToStockList(dataLocal);
+                        investProvider.addToStockList(dataLocal);
                         titleController.clear();
                         priceController.clear();
                         amountController.clear();
-                        programProvider.createPortfolio();
+                        investProvider.createPortfolio();
+                        programProvider.showSnackBar(context, "Satış işlemi başarılı");
                         Navigator.pop(context);
-                      }
-                    }
-                  }
                 }
               },
-              child: const Center(child: Text("Sat")),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                child: Text("Sat",style: TextStyle(fontSize: 15,color: Colors.white),),
+              ),
             ),
           ],
         ),
