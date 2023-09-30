@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
 import 'isar_services.dart';
+import 'models/cash.dart';
 import 'models/expense_data_model.dart';
 import 'models/portfolio_datamodel.dart';
 import 'models/stock_datamodel.dart';
@@ -10,7 +11,8 @@ import 'models/watchlist.dart';
 class InvestProvider extends ChangeNotifier {
   bool controller = false;
   int stockCount = 0;
-  bool isChecked = false;
+  bool isCheckedForPrice = true;
+  bool isCheckedForDollar = false;
 
   String _bist = "-";
   String get bist => _bist;
@@ -20,6 +22,9 @@ class InvestProvider extends ChangeNotifier {
 
   final List<WatchListDataModel> _adviceList = [];
   List<WatchListDataModel> get adviceList => _adviceList;
+
+  final List<CashDataModel> _cashList = [];
+  List<CashDataModel> get cashList => _cashList;
 
   final List<StockDataModel> _stockList = [];
   List<StockDataModel> get stockList => _stockList;
@@ -145,6 +150,47 @@ class InvestProvider extends ChangeNotifier {
     }
     return total;
   }
+  double returnPortfolioValueDollar(String name) {
+    double total = 0;
+    for (final para in portfolio) {
+      if (para.portfolio.toUpperCase() == name.toUpperCase()) {
+        total += (returnPrice(para.title) * para.amount)/double.parse(dollar);
+      }
+    }
+    return total;
+  }
+
+  double returnPortfolioProfitDollar(String name) {
+    double total = 0;
+    for (final para in portfolio) {
+      if (para.portfolio.toUpperCase() == name.toUpperCase()) {
+        print(para.dollar);
+        total +=
+            (returnPrice(para.title) * para.amount)/double.parse(dollar) - (para.amount * para.price)/para.dollar;
+      }
+    }
+    return total;
+  }
+  double returnPortfolioValueBist(String name) {
+    double total = 0;
+    for (final para in portfolio) {
+      if (para.portfolio.toUpperCase() == name.toUpperCase()) {
+        total += (returnPrice(para.title) * para.amount)/double.parse(bist);
+      }
+    }
+    return total;
+  }
+
+  double returnPortfolioProfitBist(String name) {
+    double total = 0;
+    for (final para in portfolio) {
+      if (para.portfolio.toUpperCase() == name.toUpperCase()) {
+        total +=
+            (returnPrice(para.title) * para.amount)/double.parse(bist) - (para.amount * para.price)/para.bist;
+      }
+    }
+    return total;
+  }
 
 
   //WEB SCRAPING
@@ -182,7 +228,7 @@ class InvestProvider extends ChangeNotifier {
       dom.Document html = dom.Document.html(response.body);
       final value = html.querySelectorAll('span.value.up').map((e) =>
           e.innerHtml.trim()).toList();
-      _dollar = value.first.toString();
+      _dollar = value.first.toString().replaceAll(',', '.');
     }
     else {
       print("Error");
@@ -198,7 +244,7 @@ class InvestProvider extends ChangeNotifier {
           '#content > div > div.contentLeft > div > div.wideContent.sort-bar-x > div.filterBar.liveStockFilterBar > div > div.stockPrice.node-c')
           .map((e) => e.innerHtml.trim())
           .toList();
-      _bist = value.first.toString();
+      _bist = value.first.toString().replaceAll(',', '.');
     }
     else {
       print("Error");
@@ -367,6 +413,7 @@ class InvestProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+
   void createPortfolio() {
     _portfolio.clear();
     bool control = true;
@@ -375,6 +422,12 @@ class InvestProvider extends ChangeNotifier {
         if (_stockList[i].title == _portfolio[j].title &&
             _stockList[i].portfolio == _portfolio[j].portfolio) {
           if (_stockList[i].amount > 0) {
+            _portfolio[j].dollar = (_portfolio[j].amount * (_portfolio[j].price/_portfolio[j].dollar) +
+                _stockList[i].amount * (_stockList[i].price/_stockList[i].dollar)) /
+                (_portfolio[j].amount + _stockList[i].amount);
+            _portfolio[j].bist = (_portfolio[j].amount * (_portfolio[j].price/_portfolio[j].bist) +
+                _stockList[i].amount * (_stockList[i].price/_stockList[i].bist)) /
+                (_portfolio[j].amount + _stockList[i].amount);
             _portfolio[j].price = (_portfolio[j].amount * _portfolio[j].price +
                 _stockList[i].amount * _stockList[i].price) /
                 (_portfolio[j].amount + _stockList[i].amount);
@@ -394,6 +447,8 @@ class InvestProvider extends ChangeNotifier {
           ..amount = _stockList[i].amount
           ..portfolio = _stockList[i].portfolio
           ..date = _stockList[i].date
+          ..dollar = _stockList[i].dollar
+          ..bist = _stockList[i].bist
         );
       }
       control = true;
@@ -419,10 +474,15 @@ class InvestProvider extends ChangeNotifier {
   }
 
   List<StockDataModel> getStocksByPortfolio(String name) {
-    List<StockDataModel> items = _portfolio.where((item) {
-      return item.portfolio.toUpperCase() == name.toUpperCase();
-    }).toList();
-    return items;
+    if(name != "portfoliodatamodelxyz") {
+      List<StockDataModel> items = _portfolio.where((item) {
+        return item.portfolio.toUpperCase() == name.toUpperCase();
+      }).toList();
+      return items;
+    }
+    else{
+      return _portfolio;
+    }
   }
 
   //WATCHLIST
@@ -475,5 +535,39 @@ class InvestProvider extends ChangeNotifier {
       }
       control = true;
     }
+  }
+  //CASH
+  void addToCashList(CashDataModel newData) {
+    for(final item in _cashList){
+      if(item.portfolio == newData.portfolio){
+        item.cash = newData.cash;
+        IsarService().updateCash(item, newData);
+        notifyListeners();
+        return;
+      }
+    }
+    IsarService().addCash(newData);
+    _cashList.add(newData);
+    notifyListeners();
+  }
+  void changeCashList(List<CashDataModel> cashlist) {
+    _cashList.clear();
+    _cashList.addAll(cashlist);
+    notifyListeners();
+  }
+  double returnCash(String portfolioName) {
+    for (final item in _cashList) {
+      if (item.portfolio.toUpperCase() == portfolioName.toUpperCase()) {
+        return item.cash;
+      }
+    }
+    return 0;
+  }
+  double returnTotalCash(){
+    double total = 0;
+    for (final item in _cashList) {
+      total += item.cash;
+    }
+    return total;
   }
 }

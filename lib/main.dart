@@ -5,6 +5,7 @@ import 'package:sql_project2/pages/alltime/alltime.dart';
 import 'package:sql_project2/pages/navbars/bottom_nav_bar.dart';
 import 'package:sql_project2/services/invest_provider.dart';
 import 'package:sql_project2/services/isar_services.dart';
+import 'package:sql_project2/services/models/cash.dart';
 import 'package:sql_project2/services/models/daily_data_model.dart';
 import 'package:sql_project2/services/models/expense_data_model.dart';
 import 'package:sql_project2/services/models/income_data_model.dart';
@@ -54,6 +55,8 @@ class _MyAppState extends State<MyApp> {
       List<StockDataModel> stockList = await IsarService.getAllStocks(db);
       List<PortfolioDataModel> portfolioList = await IsarService.getAllPortfolios(db);
       List<WatchListDataModel> watchList = await IsarService.getAllWatchList(db);
+      List<CashDataModel> cashList = await IsarService.getAllCash(db);
+      investProvider.changeCashList(cashList);
       investProvider.changeWatchList(watchList);
       programProvider.changeExpenseList(expenseList);
       programProvider.changeIncomeList(incomeList);
@@ -74,7 +77,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      themeMode: ThemeMode.system,
+      themeMode: ThemeMode.dark,
       theme: ThemeData.light().copyWith(
         //cardColor: Colors.white,
         useMaterial3: true

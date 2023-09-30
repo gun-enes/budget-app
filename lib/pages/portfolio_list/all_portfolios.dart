@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sql_project2/pages/hisseler.dart';
 import 'package:sql_project2/pages/advise/advicelist.dart';
+import 'package:sql_project2/pages/portfolios/portfolio.dart';
 import 'package:sql_project2/pages/portfolios/watchlist.dart';
 import 'package:sql_project2/services/invest_provider.dart';
 import 'package:sql_project2/services/prediction_provider.dart';
@@ -50,6 +51,11 @@ class _AllPortfoliosState extends State<AllPortfolios> {
                 );
                 predic.getRatios();
               }
+              else if(value == 'Takip'){
+                Navigator.push(
+                  context,MaterialPageRoute(builder: (context) => const WatchList()),
+                );
+              }
             },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
               const PopupMenuItem<String>(
@@ -64,6 +70,13 @@ class _AllPortfoliosState extends State<AllPortfolios> {
                 child: ListTile(
                   //leading: Icon(Icons.label),
                   title: Text('Önerilen Hisseler'),
+                ),
+              ),
+              const PopupMenuItem<String>(
+                value: 'Takip',
+                child: ListTile(
+                  //leading: Icon(Icons.label),
+                  title: Text('Takip Listesi'),
                 ),
               ),
             ],
@@ -82,7 +95,8 @@ class _AllPortfoliosState extends State<AllPortfolios> {
                 investProvider.watchListCreator();
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const WatchList()),
+                  MaterialPageRoute(builder: (context) => const 
+                  Portfolio(portfolioTitle: "portfoliodatamodelxyz")),
                 );
               },
               child: Padding(
@@ -107,11 +121,11 @@ class _AllPortfoliosState extends State<AllPortfolios> {
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Text("${(investProvider.returnValue()).toStringAsFixed(2)}", style: const TextStyle(fontSize: 20),),
+                                  Text("${(investProvider.returnValue()+ investProvider.returnTotalCash()).toStringAsFixed(2)}", style: const TextStyle(fontSize: 20),),
                                   investProvider.returnProfit() >= 0 ?
                                   Text(" %${(100*investProvider.returnProfit()/(investProvider.returnValue() - investProvider.returnProfit())).toStringAsFixed(2)} (+${investProvider.returnProfit().toStringAsFixed(2)})",style: TextStyle(fontSize: 20, color: investProvider.returnProfit() > 0 ? Colors.green: Colors.red))
                                       :
-                                  Text(" -%${(-100*investProvider.returnProfit()/(investProvider.returnValue() - investProvider.returnProfit())).toStringAsFixed(2)} (-${investProvider.returnProfit().toStringAsFixed(2)})",style: TextStyle(fontSize: 20, color: investProvider.returnProfit() > 0 ? Colors.green: Colors.red))
+                                  Text(" %${(-100*investProvider.returnProfit()/(investProvider.returnValue() - investProvider.returnProfit())).toStringAsFixed(2)} (${investProvider.returnProfit().toStringAsFixed(2)})",style: TextStyle(fontSize: 20, color: investProvider.returnProfit() > 0 ? Colors.green: Colors.red))
 
                                 ],
                               ),

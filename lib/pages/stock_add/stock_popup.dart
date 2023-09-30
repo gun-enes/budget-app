@@ -20,19 +20,22 @@ class _StockPopUpState extends State<StockPopUp> {
   TextEditingController titleController = TextEditingController();
   TextEditingController amountController = TextEditingController();
   TextEditingController priceController = TextEditingController();
-
+  TextEditingController dolarController = TextEditingController();
+  TextEditingController bistController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     InvestProvider investProvider = Provider.of<InvestProvider>(context);
     ProgramProvider programProvider = Provider.of<ProgramProvider>(context);
     bool controller = false;
+    dolarController.text = investProvider.dollar;
+    bistController.text = investProvider.bist;
     titleController.text = investProvider.hissekodlari[0];
     priceController.text = investProvider.returnPrice(titleController.text).toString();
     return AlertDialog(
       contentPadding: const EdgeInsets.all(14),
       content: SizedBox(
-        height: 190,
+        height: 350,
         child: Column(
           children: [
             DropdownSearch<String>(
@@ -79,10 +82,10 @@ class _StockPopUpState extends State<StockPopUp> {
                     ),
                   ),
                 ),
-                investProvider.isChecked ? SizedBox(
+                investProvider.isCheckedForPrice ? SizedBox(
                   width: 122,
                   child: TextField(
-                    style: TextStyle(fontSize: 16),
+                    style: const TextStyle(fontSize: 16),
                     keyboardType: TextInputType.number,
                     controller: priceController,
                     decoration: const InputDecoration(
@@ -100,6 +103,16 @@ class _StockPopUpState extends State<StockPopUp> {
                     //mode: Mode.MENU,
                     popupProps: PopupProps.dialog(
                       //showSearchBox: true,
+                      searchFieldProps: const TextFieldProps(
+                          style: TextStyle(fontSize: 16),
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(10))
+                          ),
+                          labelText: "Fiyat",
+                          labelStyle: TextStyle(fontSize: 16),
+                        )
+                      ),
                       listViewProps: ListViewProps(
                         itemExtent: 50,
                         //scrollDirection: Axis.horizontal,
@@ -117,18 +130,67 @@ class _StockPopUpState extends State<StockPopUp> {
                 ),
               ],
             ),
+            const SizedBox(height: 10),
+            investProvider.isCheckedForDollar ? Row(
+              children: [
+                SizedBox(
+                  width: 122,
+                  child: TextField(
+                    style: const TextStyle(fontSize: 16),
+                    keyboardType: TextInputType.number,
+                    controller: dolarController,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10))
+                      ),
+                      labelText: "Dolar Kuru",
+                      labelStyle: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 122,
+                  child: TextField(
+                    style: const TextStyle(fontSize: 16),
+                    keyboardType: TextInputType.number,
+                    controller: bistController,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10))
+                      ),
+                      labelText: "BIST",
+                      labelStyle: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                )
+              ],
+            ):const SizedBox(),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Checkbox(
-                  value: investProvider.isChecked,
+                  value: investProvider.isCheckedForPrice,
                   onChanged: (bool? value) {
                     setState(() {
-                      investProvider.isChecked = value!;
+                      investProvider.isCheckedForPrice = value!;
                     });
                   },
                 ),
-                Text('Onayla'),
+                Text('Fiyatı kendim girmek istiyorum'),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Checkbox(
+                  value: investProvider.isCheckedForDollar,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      investProvider.isCheckedForDollar = value!;
+                    });
+                  },
+                ),
+                Text('Kuru kendim girmek istiyorum'),
               ],
             ),
           ],
@@ -149,6 +211,8 @@ class _StockPopUpState extends State<StockPopUp> {
                           ..title = titleController.text
                           ..price = double.parse(priceController.text)
                           ..portfolio = widget.title
+                          ..bist = double.parse(bistController.text.replaceAll(',', '.'))
+                          ..dollar = double.parse(dolarController.text.replaceAll(',', '.'))
                           ..amount = int.parse(amountController.text);
                         investProvider.addToStockList(dataLocal);
                         titleController.clear();
@@ -175,8 +239,8 @@ class _StockPopUpState extends State<StockPopUp> {
                           ..title = titleController.text
                           ..portfolio = widget.title
                           ..price = double.parse(priceController.text)
-                          ..bist = double.parse(investProvider.bist.replaceAll(',', '.'))
-                          ..dollar = double.parse(investProvider.dollar.replaceAll(',', '.'))
+                          ..bist = double.parse(bistController.text.replaceAll(',', '.'))
+                          ..dollar = double.parse(dolarController.text.replaceAll(',', '.'))
                           ..amount = -int.parse(amountController.text);
                         final dataLocal2 = ExpenseDataModel()
                           ..type = "Income"

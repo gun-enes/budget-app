@@ -99,7 +99,7 @@ class _AllPortfolioDataCardState extends State<AllPortfolioDataCard> {
                             crossAxisAlignment:
                             CrossAxisAlignment.end,
                             children: [
-                              Text("${(investProvider.returnPortfolioValue(widget.data.title)).toStringAsFixed(2)} TL", style: const TextStyle(fontSize: 20),),
+                              Text("${(investProvider.returnPortfolioValue(widget.data.title)+investProvider.returnCash(widget.data.title)).toStringAsFixed(2)} TL", style: const TextStyle(fontSize: 20),),
                               Text("%${(100*investProvider.returnPortfolioProfit(widget.data.title)/(investProvider.returnPortfolioValue(widget.data.title) - investProvider.returnPortfolioProfit(widget.data.title))).toStringAsFixed(2)} (${investProvider.returnPortfolioProfit(widget.data.title).toStringAsFixed(2)})", style: TextStyle(color: investProvider.returnPortfolioProfit(widget.data.title)>0 ? Colors.green : Colors.red))
                             ],
                           ),

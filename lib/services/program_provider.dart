@@ -236,14 +236,14 @@ class ProgramProvider extends ChangeNotifier {
       final dataLocal = DailyDataModel()
         ..limit = limit
         ..amount = a
-        ..date = _expenseList.last.date;
+        ..date = _expenseList.isEmpty ? DateTime.now():_expenseList.last.date;
       addToDailyList(dataLocal);
     }
     notifyListeners();
   }
   int sum_income_prev(){
     int toplam = 0;
-    DateTime x = _expenseList.last.date;
+    DateTime x = _expenseList.isEmpty ? DateTime.now():_expenseList.last.date;
     for(final para in _expenseList){
       if(para.type == "Income") {
         if (para.date.month == x.month && para.date.year == x.year) {

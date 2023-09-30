@@ -1,5 +1,6 @@
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:sql_project2/services/models/cash.dart';
 import 'package:sql_project2/services/models/monthly_data_model.dart';
 import 'package:sql_project2/services/models/portfolio_datamodel.dart';
 import 'package:sql_project2/services/models/stock_datamodel.dart';
@@ -177,6 +178,28 @@ class IsarService {
   static Future<List<WatchListDataModel>> getAllWatchList(Isar isar) async {
     return await isar.watchListDataModels.where().findAll();
   }
+
+  Future<void> addCash(CashDataModel newData) async {
+    final isar = await db;
+    isar.writeTxnSync<int>(() => isar.cashDataModels.putSync(newData));
+  }
+  Future<void> updateCash(CashDataModel oldData,CashDataModel newData)async {
+    final isar = await db;
+    final items = isar.cashDataModels;
+    await isar.writeTxn(() async {
+      final item = await items.where().idEqualTo(oldData.id).findFirst();
+      if (item != null) {
+        item.portfolio = newData.portfolio;
+        item.cash = newData.cash;
+        await items.put(item);
+      }
+    }
+    );
+  }
+  static Future<List<CashDataModel>> getAllCash(Isar isar) async {
+    return await isar.cashDataModels.where().findAll();
+  }
+
   Future<void> cleanDb() async {
     final isar = await db;
     await isar.writeTxn(() => isar.clear());
@@ -186,7 +209,7 @@ class IsarService {
     final dir = await getApplicationDocumentsDirectory();
     if (Isar.instanceNames.isEmpty) {
       return await Isar.open(
-        [IncomeDataModelSchema,DailyDataModelSchema,ExpenseDataModelSchema,MonthlyDataModelSchema,StockDataModelSchema,PortfolioDataModelSchema,WatchListDataModelSchema],
+        [IncomeDataModelSchema,DailyDataModelSchema,ExpenseDataModelSchema,MonthlyDataModelSchema,StockDataModelSchema,PortfolioDataModelSchema,WatchListDataModelSchema,CashDataModelSchema],
         directory: dir.path,
         inspector: true,
       );

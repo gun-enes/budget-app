@@ -22,23 +22,33 @@ const StockDataModelSchema = CollectionSchema(
       name: r'amount',
       type: IsarType.long,
     ),
-    r'date': PropertySchema(
+    r'bist': PropertySchema(
       id: 1,
+      name: r'bist',
+      type: IsarType.double,
+    ),
+    r'date': PropertySchema(
+      id: 2,
       name: r'date',
       type: IsarType.dateTime,
     ),
+    r'dollar': PropertySchema(
+      id: 3,
+      name: r'dollar',
+      type: IsarType.double,
+    ),
     r'portfolio': PropertySchema(
-      id: 2,
+      id: 4,
       name: r'portfolio',
       type: IsarType.string,
     ),
     r'price': PropertySchema(
-      id: 3,
+      id: 5,
       name: r'price',
       type: IsarType.double,
     ),
     r'title': PropertySchema(
-      id: 4,
+      id: 6,
       name: r'title',
       type: IsarType.string,
     )
@@ -75,10 +85,12 @@ void _stockDataModelSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeLong(offsets[0], object.amount);
-  writer.writeDateTime(offsets[1], object.date);
-  writer.writeString(offsets[2], object.portfolio);
-  writer.writeDouble(offsets[3], object.price);
-  writer.writeString(offsets[4], object.title);
+  writer.writeDouble(offsets[1], object.bist);
+  writer.writeDateTime(offsets[2], object.date);
+  writer.writeDouble(offsets[3], object.dollar);
+  writer.writeString(offsets[4], object.portfolio);
+  writer.writeDouble(offsets[5], object.price);
+  writer.writeString(offsets[6], object.title);
 }
 
 StockDataModel _stockDataModelDeserialize(
@@ -89,11 +101,13 @@ StockDataModel _stockDataModelDeserialize(
 ) {
   final object = StockDataModel();
   object.amount = reader.readLong(offsets[0]);
-  object.date = reader.readDateTime(offsets[1]);
+  object.bist = reader.readDouble(offsets[1]);
+  object.date = reader.readDateTime(offsets[2]);
+  object.dollar = reader.readDouble(offsets[3]);
   object.id = id;
-  object.portfolio = reader.readString(offsets[2]);
-  object.price = reader.readDouble(offsets[3]);
-  object.title = reader.readString(offsets[4]);
+  object.portfolio = reader.readString(offsets[4]);
+  object.price = reader.readDouble(offsets[5]);
+  object.title = reader.readString(offsets[6]);
   return object;
 }
 
@@ -107,12 +121,16 @@ P _stockDataModelDeserializeProp<P>(
     case 0:
       return (reader.readLong(offset)) as P;
     case 1:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 2:
-      return (reader.readString(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 3:
       return (reader.readDouble(offset)) as P;
     case 4:
+      return (reader.readString(offset)) as P;
+    case 5:
+      return (reader.readDouble(offset)) as P;
+    case 6:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -272,6 +290,72 @@ extension StockDataModelQueryFilter
   }
 
   QueryBuilder<StockDataModel, StockDataModel, QAfterFilterCondition>
+      bistEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'bist',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<StockDataModel, StockDataModel, QAfterFilterCondition>
+      bistGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'bist',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<StockDataModel, StockDataModel, QAfterFilterCondition>
+      bistLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'bist',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<StockDataModel, StockDataModel, QAfterFilterCondition>
+      bistBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'bist',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<StockDataModel, StockDataModel, QAfterFilterCondition>
       dateEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -323,6 +407,72 @@ extension StockDataModelQueryFilter
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<StockDataModel, StockDataModel, QAfterFilterCondition>
+      dollarEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'dollar',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<StockDataModel, StockDataModel, QAfterFilterCondition>
+      dollarGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'dollar',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<StockDataModel, StockDataModel, QAfterFilterCondition>
+      dollarLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'dollar',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<StockDataModel, StockDataModel, QAfterFilterCondition>
+      dollarBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'dollar',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
       ));
     });
   }
@@ -742,6 +892,18 @@ extension StockDataModelQuerySortBy
     });
   }
 
+  QueryBuilder<StockDataModel, StockDataModel, QAfterSortBy> sortByBist() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'bist', Sort.asc);
+    });
+  }
+
+  QueryBuilder<StockDataModel, StockDataModel, QAfterSortBy> sortByBistDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'bist', Sort.desc);
+    });
+  }
+
   QueryBuilder<StockDataModel, StockDataModel, QAfterSortBy> sortByDate() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'date', Sort.asc);
@@ -751,6 +913,19 @@ extension StockDataModelQuerySortBy
   QueryBuilder<StockDataModel, StockDataModel, QAfterSortBy> sortByDateDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'date', Sort.desc);
+    });
+  }
+
+  QueryBuilder<StockDataModel, StockDataModel, QAfterSortBy> sortByDollar() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dollar', Sort.asc);
+    });
+  }
+
+  QueryBuilder<StockDataModel, StockDataModel, QAfterSortBy>
+      sortByDollarDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dollar', Sort.desc);
     });
   }
 
@@ -807,6 +982,18 @@ extension StockDataModelQuerySortThenBy
     });
   }
 
+  QueryBuilder<StockDataModel, StockDataModel, QAfterSortBy> thenByBist() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'bist', Sort.asc);
+    });
+  }
+
+  QueryBuilder<StockDataModel, StockDataModel, QAfterSortBy> thenByBistDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'bist', Sort.desc);
+    });
+  }
+
   QueryBuilder<StockDataModel, StockDataModel, QAfterSortBy> thenByDate() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'date', Sort.asc);
@@ -816,6 +1003,19 @@ extension StockDataModelQuerySortThenBy
   QueryBuilder<StockDataModel, StockDataModel, QAfterSortBy> thenByDateDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'date', Sort.desc);
+    });
+  }
+
+  QueryBuilder<StockDataModel, StockDataModel, QAfterSortBy> thenByDollar() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dollar', Sort.asc);
+    });
+  }
+
+  QueryBuilder<StockDataModel, StockDataModel, QAfterSortBy>
+      thenByDollarDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dollar', Sort.desc);
     });
   }
 
@@ -877,9 +1077,21 @@ extension StockDataModelQueryWhereDistinct
     });
   }
 
+  QueryBuilder<StockDataModel, StockDataModel, QDistinct> distinctByBist() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'bist');
+    });
+  }
+
   QueryBuilder<StockDataModel, StockDataModel, QDistinct> distinctByDate() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'date');
+    });
+  }
+
+  QueryBuilder<StockDataModel, StockDataModel, QDistinct> distinctByDollar() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'dollar');
     });
   }
 
@@ -918,9 +1130,21 @@ extension StockDataModelQueryProperty
     });
   }
 
+  QueryBuilder<StockDataModel, double, QQueryOperations> bistProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'bist');
+    });
+  }
+
   QueryBuilder<StockDataModel, DateTime, QQueryOperations> dateProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'date');
+    });
+  }
+
+  QueryBuilder<StockDataModel, double, QQueryOperations> dollarProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'dollar');
     });
   }
 
