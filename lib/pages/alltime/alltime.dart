@@ -109,7 +109,7 @@ class _AllTimeState extends State<AllTime> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     const SizedBox(width:  10,),
-                    Text("₺${(programProvider.sum_income()-programProvider.sum_outcome() + initialMoney - investProvider.returnValue() + investProvider.returnProfit()).toStringAsFixed(2)}",style: const TextStyle(fontSize: 28),),
+                    Text("₺${(programProvider.sum_income()-programProvider.sum_outcome() + initialMoney - investProvider.returnValue() + investProvider.returnProfit() + investProvider.returnTotalCash()).toStringAsFixed(2)}",style: const TextStyle(fontSize: 28),),
                   ],
                 ),
                 Row(

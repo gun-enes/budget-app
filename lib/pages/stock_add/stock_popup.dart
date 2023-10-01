@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sql_project2/services/models/expense_data_model.dart';
 import '../../services/invest_provider.dart';
+import '../../services/models/cash.dart';
 import '../../services/models/stock_datamodel.dart';
 import '../../services/program_provider.dart';
 
@@ -32,14 +33,13 @@ class _StockPopUpState extends State<StockPopUp> {
     bistController.text = investProvider.bist;
     titleController.text = investProvider.hissekodlari[0];
     priceController.text = investProvider.returnPrice(titleController.text).toString();
-    return AlertDialog(
-      contentPadding: const EdgeInsets.all(14),
-      content: SizedBox(
-        height: 350,
+    return Scaffold(
+      body: SafeArea(
         child: Column(
           children: [
             DropdownSearch<String>(
               popupProps: const PopupProps.dialog(
+                searchDelay: Duration(seconds: 0),
                 showSearchBox: true,
                 showSelectedItems: true
               ),
@@ -69,7 +69,7 @@ class _StockPopUpState extends State<StockPopUp> {
                         }
                         return null;
                       },
-                      style: TextStyle(fontSize: 16),
+                      style: const TextStyle(fontSize: 16),
                       keyboardType: TextInputType.number,
                       controller: amountController,
                       decoration: const InputDecoration(
@@ -103,6 +103,7 @@ class _StockPopUpState extends State<StockPopUp> {
                     //mode: Mode.MENU,
                     popupProps: PopupProps.dialog(
                       //showSearchBox: true,
+                      searchDelay: const Duration(seconds: 0),
                       searchFieldProps: const TextFieldProps(
                           style: TextStyle(fontSize: 16),
                         decoration: InputDecoration(
@@ -176,7 +177,7 @@ class _StockPopUpState extends State<StockPopUp> {
                     });
                   },
                 ),
-                Text('Fiyatı kendim girmek istiyorum'),
+                const Text('Fiyatı kendim girmek istiyorum'),
               ],
             ),
             Row(
@@ -190,81 +191,84 @@ class _StockPopUpState extends State<StockPopUp> {
                     });
                   },
                 ),
-                Text('Kuru kendim girmek istiyorum'),
+                const Text('Kuru kendim girmek istiyorum'),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
+                  ),
+                  onPressed: () {
+                    if (formGlobalKey2.currentState!.validate()) {
+                      final dataLocal = StockDataModel()
+                        ..date = DateTime.now()
+                        ..title = titleController.text
+                        ..price = double.parse(priceController.text)
+                        ..portfolio = widget.title
+                        ..bist = double.parse(bistController.text.replaceAll(',', '.'))
+                        ..dollar = double.parse(dolarController.text.replaceAll(',', '.'))
+                        ..amount = int.parse(amountController.text);
+                      investProvider.addToStockList(dataLocal);
+                      titleController.clear();
+                      priceController.clear();
+                      amountController.clear();
+
+                      CashDataModel data = CashDataModel()..portfolio = widget.title ..cash = investProvider.returnCash(widget.title) - int.parse(amountController.text)*double.parse(priceController.text);
+                      investProvider.addToCashList(data);
+                      programProvider.showSnackBar(context, "Alım işlemi başarılı");
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: const Padding(
+                    padding:  EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Text("Al",style: TextStyle(fontSize: 15,color: Colors.white),),
+                  ),
+                ),
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
+                  ),
+                  onPressed: () {
+                    controller = true;
+                    if (formGlobalKey2.currentState!.validate()) {
+                      final dataLocal = StockDataModel()
+                        ..date = DateTime.now()
+                        ..title = titleController.text
+                        ..portfolio = widget.title
+                        ..price = double.parse(priceController.text)
+                        ..bist = double.parse(bistController.text.replaceAll(',', '.'))
+                        ..dollar = double.parse(dolarController.text.replaceAll(',', '.'))
+                        ..amount = -int.parse(amountController.text);
+                      final dataLocal2 = ExpenseDataModel()
+                        ..type = "Income"
+                        ..date = DateTime.now()
+                        ..amount = (int.parse(amountController.text)*(double.parse(priceController.text) - investProvider.returnCost(titleController.text))).toInt()
+                        ..title = "Borsa";
+                      programProvider.addToExpenseList(dataLocal2);
+                      investProvider.addToStockList(dataLocal);
+                      titleController.clear();
+                      priceController.clear();
+                      amountController.clear();
+                      CashDataModel data = CashDataModel()..portfolio = widget.title ..cash = investProvider.returnCash(widget.title) + int.parse(amountController.text)*double.parse(priceController.text);
+                      investProvider.addToCashList(data);
+                      investProvider.createPortfolio();
+                      programProvider.showSnackBar(context, "Satış işlemi başarılı");
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Text("Sat",style: TextStyle(fontSize: 15,color: Colors.white),),
+                  ),
+                ),
               ],
             ),
           ],
         ),
       ),
-      actions: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            ElevatedButton(
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
-              ),
-              onPressed: () {
-                    if (formGlobalKey2.currentState!.validate()) {
-                        final dataLocal = StockDataModel()
-                          ..date = DateTime.now()
-                          ..title = titleController.text
-                          ..price = double.parse(priceController.text)
-                          ..portfolio = widget.title
-                          ..bist = double.parse(bistController.text.replaceAll(',', '.'))
-                          ..dollar = double.parse(dolarController.text.replaceAll(',', '.'))
-                          ..amount = int.parse(amountController.text);
-                        investProvider.addToStockList(dataLocal);
-                        titleController.clear();
-                        priceController.clear();
-                        amountController.clear();
-                        programProvider.showSnackBar(context, "Alım işlemi başarılı");
-                        Navigator.pop(context);
-                    }
-              },
-              child: const Padding(
-                padding:  EdgeInsets.symmetric(horizontal: 20.0),
-                child: Text("Al",style: TextStyle(fontSize: 15,color: Colors.white),),
-              ),
-            ),
-            ElevatedButton(
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
-              ),
-              onPressed: () {
-                controller = true;
-                if (formGlobalKey2.currentState!.validate()) {
-                        final dataLocal = StockDataModel()
-                          ..date = DateTime.now()
-                          ..title = titleController.text
-                          ..portfolio = widget.title
-                          ..price = double.parse(priceController.text)
-                          ..bist = double.parse(bistController.text.replaceAll(',', '.'))
-                          ..dollar = double.parse(dolarController.text.replaceAll(',', '.'))
-                          ..amount = -int.parse(amountController.text);
-                        final dataLocal2 = ExpenseDataModel()
-                          ..type = "Income"
-                          ..date = DateTime.now()
-                          ..amount = (int.parse(amountController.text)*(double.parse(priceController.text) - investProvider.returnCost(titleController.text))).toInt()
-                          ..title = "Borsa";
-                        programProvider.addToExpenseList(dataLocal2);
-                        investProvider.addToStockList(dataLocal);
-                        titleController.clear();
-                        priceController.clear();
-                        amountController.clear();
-                        investProvider.createPortfolio();
-                        programProvider.showSnackBar(context, "Satış işlemi başarılı");
-                        Navigator.pop(context);
-                }
-              },
-              child: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.0),
-                child: Text("Sat",style: TextStyle(fontSize: 15,color: Colors.white),),
-              ),
-            ),
-          ],
-        ),
-      ],
     );
   }
 }

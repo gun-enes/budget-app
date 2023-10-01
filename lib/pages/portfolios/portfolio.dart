@@ -1,3 +1,4 @@
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sql_project2/services/models/cash.dart';
@@ -22,10 +23,74 @@ class _PortfolioState extends State<Portfolio> {
     InvestProvider investProvider = Provider.of<InvestProvider>(context);
     final formGlobalKey = GlobalKey<FormState>();
     TextEditingController titleController = TextEditingController();
+    TextEditingController portfolioController = TextEditingController();
+    TextEditingController sendMoneyController = TextEditingController();
     List<StockDataModel> stockList = investProvider.getStocksByPortfolio(widget.portfolioTitle);
     return Scaffold(
       appBar: AppBar(
         actions: [
+          IconButton(
+              onPressed: () => showDialog<String>(
+                  context: context,
+                  builder: (BuildContext context) => AlertDialog(
+                    content: Column(
+                      children: [
+                        SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          child: Form(
+                            key: formGlobalKey,
+                            child: TextFormField(
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'Bu alan boş bırakılamaz!';
+                                }
+                                return null;
+                              },
+                              keyboardType: TextInputType.number,
+                              controller: sendMoneyController,
+                              decoration: const InputDecoration(
+                                labelText: "Nakit Miktarı",
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.all(Radius.circular(10))
+                                ),
+                              ),
+                            ),
+
+                          ),
+                        ),
+                        DropdownSearch<String>(
+                          popupProps: const PopupProps.dialog(
+                              searchDelay: Duration(seconds: 0),
+                              showSelectedItems: true
+                          ),
+                          items: investProvider.portfolioNames,
+                          onChanged: (value) {
+                            portfolioController.text = value!;
+                          },
+                          selectedItem: investProvider.hissekodlari[0],
+                        ),
+                      ],
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          if (formGlobalKey.currentState!.validate()) {
+                            CashDataModel cashDataModel = CashDataModel()..portfolio= portfolioController.text..cash = double.parse(sendMoneyController.text.toString()) +
+                                investProvider.returnCash(portfolioController.text);
+                            CashDataModel cashDataModel2 = CashDataModel()..portfolio= widget.portfolioTitle ..cash = -double.parse(sendMoneyController.text.toString()) +
+                                investProvider.returnCash(widget.portfolioTitle);
+                            investProvider.addToCashList(cashDataModel);
+                            investProvider.addToCashList(cashDataModel2);
+                            titleController.clear();
+                            Navigator.pop(context);
+                          }
+                        },
+                        child: const Center(child: Text("Onayla")),
+                      ),
+                    ],
+                  )
+              ),
+              icon: Icon(Icons.send)),
           IconButton(
             onPressed: () => showDialog<String>(
                 context: context,

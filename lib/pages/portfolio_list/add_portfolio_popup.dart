@@ -53,5 +53,4 @@ class _AddPortfolioState extends State<AddPortfolio> {
       ],
     );
   }
-
 }
