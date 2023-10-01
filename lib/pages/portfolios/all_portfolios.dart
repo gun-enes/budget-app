@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sql_project2/pages/advise/advicelist.dart';
 import 'package:sql_project2/pages/hisseler.dart';
 import 'package:sql_project2/pages/portfolios/all_portfolios_datacard.dart';
 import 'package:sql_project2/pages/portfolios/portfolio.dart';
+import 'package:sql_project2/pages/portfolios/watchlist.dart';
+import 'package:sql_project2/services/invest_provider.dart';
 import 'package:sql_project2/services/models/portfolio_datamodel.dart';
-import '../../services/program_provider.dart';
-import '../expenses/expense_datacard.dart';
-import 'package:sql_project2/pages/expenses/showPopupExpenses.dart';
 
 import '../stock_add/stocks.dart';
 
@@ -25,7 +25,7 @@ class _AllPortfoliosState extends State<AllPortfolios> {
 
   @override
   Widget build(BuildContext context) {
-    ProgramProvider programProvider = Provider.of<ProgramProvider>(context);
+    InvestProvider programProvider = Provider.of<InvestProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text("Portföy"),
@@ -42,7 +42,12 @@ class _AllPortfoliosState extends State<AllPortfolios> {
               }
               else if(value == 'Hisse'){
                 Navigator.push(
-                  context,MaterialPageRoute(builder: (context) => Stocks()),
+                  context,MaterialPageRoute(builder: (context) => const AdviceList()),
+                );
+              }
+              else if(value == 'Takip'){
+                Navigator.push(
+                  context,MaterialPageRoute(builder: (context) => const WatchList()),
                 );
               }
             },
@@ -58,7 +63,14 @@ class _AllPortfoliosState extends State<AllPortfolios> {
                 value: 'Hisse',
                 child: ListTile(
                   //leading: Icon(Icons.label),
-                  title: Text('Hisse al/sat'),
+                  title: Text('Hisse önerileri'),
+                ),
+              ),
+              const PopupMenuItem<String>(
+                value: 'Takip',
+                child: ListTile(
+                  //leading: Icon(Icons.label),
+                  title: Text('Takip Listesi'),
                 ),
               ),
             ],

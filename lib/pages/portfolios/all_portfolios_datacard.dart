@@ -5,6 +5,7 @@ import 'package:sql_project2/pages/portfolios/portfolio.dart';
 import 'package:sql_project2/services/models/portfolio_datamodel.dart';
 import 'package:sql_project2/services/models/stock_datamodel.dart';
 import '../../services/program_provider.dart';
+import '../../services/invest_provider.dart';
 class AllPortfolioDataCard extends StatefulWidget {
   const AllPortfolioDataCard({
     Key? key,
@@ -21,7 +22,7 @@ class AllPortfolioDataCard extends StatefulWidget {
 class _AllPortfolioDataCardState extends State<AllPortfolioDataCard> {
   @override
   Widget build(BuildContext context) {
-    ProgramProvider programProvider = Provider.of<ProgramProvider>(context);
+    InvestProvider programProvider = Provider.of<InvestProvider>(context);
     return Slidable(
       endActionPane: ActionPane(
         motion: const ScrollMotion(),

@@ -17,7 +17,12 @@ class _NavigasyonBarState extends State<NavigasyonBar> {
     const AllTime(),
     const Expenses(),
   ];
-  int currentIndex = 0;
+  int currentIndex = 1;
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: 1);
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

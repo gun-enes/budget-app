@@ -164,7 +164,7 @@ class ProgramProvider extends ChangeNotifier {
     notifyListeners();
   }
   void deleteDay(DailyDataModel data){
-    if(data.date.day == 1){
+    if(data.date.day == 1 && _monthlyList.isNotEmpty){
       deleteMonth(_monthlyList.last);
     }
     IsarService().deleteDaily(data.id);
@@ -229,7 +229,7 @@ class ProgramProvider extends ChangeNotifier {
       final dataLocal = DailyDataModel()
         ..limit = limit
         ..amount = a
-        ..date = _dailyList.last.date.add(const Duration(days: 1));
+        ..date = _dailyList.isEmpty ? _expenseList.isEmpty ? DateTime.now(): _expenseList.last.date: _dailyList.last.date.add(const Duration(days: 1));
       addToDailyList(dataLocal);
     }
     else{

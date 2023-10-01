@@ -35,27 +35,53 @@ class _StockPopUpState extends State<StockPopUp> {
     priceController.text = investProvider.returnPrice(titleController.text).toString();
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          children: [
-            DropdownSearch<String>(
-              popupProps: const PopupProps.dialog(
-                searchDelay: Duration(seconds: 0),
-                showSearchBox: true,
-                showSelectedItems: true
-              ),
-              items: investProvider.hissekodlari,
-              onChanged: (value) {
-                titleController.text = value!;
-              },
-              selectedItem: investProvider.hissekodlari[0],
-            ),
-            const SizedBox(height: 10),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 SizedBox(
-                  width: 122,
+                  height: 50,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: DropdownSearch<String>(
+                    dropdownButtonProps: const DropdownButtonProps(
+                      iconSize: 36,
+                      ),
+                    dropdownDecoratorProps: const DropDownDecoratorProps(
+                      dropdownSearchDecoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10))
+                        ),
+                        labelText: "Hisse Kodu",
+                        labelStyle: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                    popupProps: const PopupProps.dialog(
+                      searchFieldProps: TextFieldProps(
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(10))
+                          ),
+                          labelText: "Ara",
+                          labelStyle: TextStyle(fontSize: 20),
+                        ),
+                      ),
+                      searchDelay: Duration(seconds: 0),
+                      showSearchBox: true,
+                      showSelectedItems: true
+                    ),
+                    items: investProvider.hissekodlari,
+                    onChanged: (value) {
+                      titleController.text = value!;
+                    },
+                    selectedItem: investProvider.hissekodlari[0],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: Form(
                     key: formGlobalKey2,
                     child: TextFormField(
@@ -73,18 +99,18 @@ class _StockPopUpState extends State<StockPopUp> {
                       keyboardType: TextInputType.number,
                       controller: amountController,
                       decoration: const InputDecoration(
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(10))
-                          ),
-                          labelText: "Miktar",
-                          labelStyle: TextStyle(fontSize: 16),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(10))
+                        ),
+                        labelText: "Miktar",
+                        labelStyle: TextStyle(fontSize: 16),
                       ),
                     ),
                   ),
                 ),
-                investProvider.isCheckedForPrice ? SizedBox(
-                  width: 122,
-                  child: TextField(
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: investProvider.isCheckedForPrice ? TextField(
                     style: const TextStyle(fontSize: 16),
                     keyboardType: TextInputType.number,
                     controller: priceController,
@@ -95,24 +121,30 @@ class _StockPopUpState extends State<StockPopUp> {
                       labelText: "Fiyat",
                       labelStyle: TextStyle(fontSize: 16),
                     ),
-                  ),
-                ):
-                SizedBox(
-                  width: 122,
-                  child: DropdownSearch<String>(
+                  ):
+                  DropdownSearch<String>(
+                    dropdownDecoratorProps: const DropDownDecoratorProps(
+                      dropdownSearchDecoration: InputDecoration(
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(10))
+                        ),
+                        labelText: "Fiyat",
+                        labelStyle: TextStyle(fontSize: 16),
+                      ),
+                    ),
                     //mode: Mode.MENU,
                     popupProps: PopupProps.dialog(
                       //showSearchBox: true,
                       searchDelay: const Duration(seconds: 0),
                       searchFieldProps: const TextFieldProps(
-                          style: TextStyle(fontSize: 16),
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(10))
-                          ),
-                          labelText: "Fiyat",
-                          labelStyle: TextStyle(fontSize: 16),
-                        )
+                          style: TextStyle(fontSize: 20),
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(Radius.circular(10))
+                            ),
+                            labelText: "Fiyat",
+                            labelStyle: TextStyle(fontSize: 16),
+                          )
                       ),
                       listViewProps: ListViewProps(
                         itemExtent: 50,
@@ -129,144 +161,144 @@ class _StockPopUpState extends State<StockPopUp> {
                     selectedItem: investProvider.returnPrice(titleController.text).toString(),
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            investProvider.isCheckedForDollar ? Row(
-              children: [
-                SizedBox(
-                  width: 122,
-                  child: TextField(
-                    style: const TextStyle(fontSize: 16),
-                    keyboardType: TextInputType.number,
-                    controller: dolarController,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10))
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: investProvider.isCheckedForDollar ? Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: TextField(
+                          keyboardType: TextInputType.number,
+                          controller: dolarController,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(Radius.circular(10))
+                            ),
+                            labelText: "Dolar Kuru",
+                            labelStyle: TextStyle(fontSize: 16),
+                          ),
+                        ),
                       ),
-                      labelText: "Dolar Kuru",
-                      labelStyle: TextStyle(fontSize: 16),
-                    ),
-                  ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: TextField(
+                          keyboardType: TextInputType.number,
+                          controller: bistController,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(Radius.circular(10))
+                            ),
+                            labelText: "BIST",
+                            labelStyle: TextStyle(fontSize: 16),
+                          ),
+                        ),
+                      )
+                    ],
+                  ):const SizedBox(),
                 ),
-                SizedBox(
-                  width: 122,
-                  child: TextField(
-                    style: const TextStyle(fontSize: 16),
-                    keyboardType: TextInputType.number,
-                    controller: bistController,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10))
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Checkbox(
+                      value: investProvider.isCheckedForPrice,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          investProvider.isCheckedForPrice = value!;
+                        });
+                      },
+                    ),
+                    const Text('Fiyatı kendim girmek istiyorum'),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Checkbox(
+                      value: investProvider.isCheckedForDollar,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          investProvider.isCheckedForDollar = value!;
+                        });
+                      },
+                    ),
+                    const Text('Kuru kendim girmek istiyorum'),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
                       ),
-                      labelText: "BIST",
-                      labelStyle: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                )
-              ],
-            ):const SizedBox(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Checkbox(
-                  value: investProvider.isCheckedForPrice,
-                  onChanged: (bool? value) {
-                    setState(() {
-                      investProvider.isCheckedForPrice = value!;
-                    });
-                  },
-                ),
-                const Text('Fiyatı kendim girmek istiyorum'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Checkbox(
-                  value: investProvider.isCheckedForDollar,
-                  onChanged: (bool? value) {
-                    setState(() {
-                      investProvider.isCheckedForDollar = value!;
-                    });
-                  },
-                ),
-                const Text('Kuru kendim girmek istiyorum'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
-                  ),
-                  onPressed: () {
-                    if (formGlobalKey2.currentState!.validate()) {
-                      final dataLocal = StockDataModel()
-                        ..date = DateTime.now()
-                        ..title = titleController.text
-                        ..price = double.parse(priceController.text)
-                        ..portfolio = widget.title
-                        ..bist = double.parse(bistController.text.replaceAll(',', '.'))
-                        ..dollar = double.parse(dolarController.text.replaceAll(',', '.'))
-                        ..amount = int.parse(amountController.text);
-                      investProvider.addToStockList(dataLocal);
-                      titleController.clear();
-                      priceController.clear();
-                      amountController.clear();
+                      onPressed: () {
+                        if (formGlobalKey2.currentState!.validate()) {
+                          final dataLocal = StockDataModel()
+                            ..date = DateTime.now()
+                            ..title = titleController.text
+                            ..price = double.parse(priceController.text)
+                            ..portfolio = widget.title
+                            ..bist = double.parse(bistController.text.replaceAll(',', '.'))
+                            ..dollar = double.parse(dolarController.text.replaceAll(',', '.'))
+                            ..amount = int.parse(amountController.text);
+                          investProvider.addToStockList(dataLocal);
+                          titleController.clear();
+                          priceController.clear();
+                          amountController.clear();
 
-                      CashDataModel data = CashDataModel()..portfolio = widget.title ..cash = investProvider.returnCash(widget.title) - int.parse(amountController.text)*double.parse(priceController.text);
-                      investProvider.addToCashList(data);
-                      programProvider.showSnackBar(context, "Alım işlemi başarılı");
-                      Navigator.pop(context);
-                    }
-                  },
-                  child: const Padding(
-                    padding:  EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Text("Al",style: TextStyle(fontSize: 15,color: Colors.white),),
-                  ),
-                ),
-                ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
-                  ),
-                  onPressed: () {
-                    controller = true;
-                    if (formGlobalKey2.currentState!.validate()) {
-                      final dataLocal = StockDataModel()
-                        ..date = DateTime.now()
-                        ..title = titleController.text
-                        ..portfolio = widget.title
-                        ..price = double.parse(priceController.text)
-                        ..bist = double.parse(bistController.text.replaceAll(',', '.'))
-                        ..dollar = double.parse(dolarController.text.replaceAll(',', '.'))
-                        ..amount = -int.parse(amountController.text);
-                      final dataLocal2 = ExpenseDataModel()
-                        ..type = "Income"
-                        ..date = DateTime.now()
-                        ..amount = (int.parse(amountController.text)*(double.parse(priceController.text) - investProvider.returnCost(titleController.text))).toInt()
-                        ..title = "Borsa";
-                      programProvider.addToExpenseList(dataLocal2);
-                      investProvider.addToStockList(dataLocal);
-                      titleController.clear();
-                      priceController.clear();
-                      amountController.clear();
-                      CashDataModel data = CashDataModel()..portfolio = widget.title ..cash = investProvider.returnCash(widget.title) + int.parse(amountController.text)*double.parse(priceController.text);
-                      investProvider.addToCashList(data);
-                      investProvider.createPortfolio();
-                      programProvider.showSnackBar(context, "Satış işlemi başarılı");
-                      Navigator.pop(context);
-                    }
-                  },
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Text("Sat",style: TextStyle(fontSize: 15,color: Colors.white),),
-                  ),
+                          CashDataModel data = CashDataModel()..portfolio = widget.title ..cash = investProvider.returnCash(widget.title) - int.parse(amountController.text)*double.parse(priceController.text);
+                          investProvider.addToCashList(data);
+                          programProvider.showSnackBar(context, "Alım işlemi başarılı");
+                          Navigator.pop(context);
+                        }
+                      },
+                      child: const Padding(
+                        padding:  EdgeInsets.symmetric(horizontal: 20.0),
+                        child: Text("Al",style: TextStyle(fontSize: 15,color: Colors.white),),
+                      ),
+                    ),
+                    ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
+                      ),
+                      onPressed: () {
+                        controller = true;
+                        if (formGlobalKey2.currentState!.validate()) {
+                          final dataLocal = StockDataModel()
+                            ..date = DateTime.now()
+                            ..title = titleController.text
+                            ..portfolio = widget.title
+                            ..price = double.parse(priceController.text)
+                            ..bist = double.parse(bistController.text.replaceAll(',', '.'))
+                            ..dollar = double.parse(dolarController.text.replaceAll(',', '.'))
+                            ..amount = -int.parse(amountController.text);
+                          final dataLocal2 = ExpenseDataModel()
+                            ..type = "Income"
+                            ..date = DateTime.now()
+                            ..amount = (int.parse(amountController.text)*(double.parse(priceController.text) - investProvider.returnCost(titleController.text))).toInt()
+                            ..title = "Borsa";
+                          programProvider.addToExpenseList(dataLocal2);
+                          investProvider.addToStockList(dataLocal);
+                          titleController.clear();
+                          priceController.clear();
+                          amountController.clear();
+                          CashDataModel data = CashDataModel()..portfolio = widget.title ..cash = investProvider.returnCash(widget.title) + int.parse(amountController.text)*double.parse(priceController.text);
+                          investProvider.addToCashList(data);
+                          investProvider.createPortfolio();
+                          programProvider.showSnackBar(context, "Satış işlemi başarılı");
+                          Navigator.pop(context);
+                        }
+                      },
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20.0),
+                        child: Text("Sat",style: TextStyle(fontSize: 15,color: Colors.white),),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );
