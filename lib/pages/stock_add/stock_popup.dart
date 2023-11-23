@@ -82,34 +82,6 @@ class _StockPopUpState extends State<StockPopUp> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Form(
-                    key: formGlobalKey2,
-                    child: TextFormField(
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return 'Bu alan boş bırakılamaz!';
-                        }
-                        else if((investProvider.returnStockInPortfolio(widget.title, titleController.text) < int.parse(amountController.text)) && controller){
-                          controller = false;
-                          return 'Sahip olduğunuzdan fazlasını satamazsınız!';
-                        }
-                        return null;
-                      },
-                      style: const TextStyle(fontSize: 16),
-                      keyboardType: TextInputType.number,
-                      controller: amountController,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10))
-                        ),
-                        labelText: "Miktar",
-                        labelStyle: TextStyle(fontSize: 16),
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: investProvider.isCheckedForPrice ? TextField(
                     style: const TextStyle(fontSize: 16),
                     keyboardType: TextInputType.number,
@@ -159,6 +131,34 @@ class _StockPopUpState extends State<StockPopUp> {
                       priceController.text = value!;
                     },
                     selectedItem: investProvider.returnPrice(titleController.text).toString(),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Form(
+                    key: formGlobalKey2,
+                    child: TextFormField(
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Bu alan boş bırakılamaz!';
+                        }
+                        else if((investProvider.returnStockInPortfolio(widget.title, titleController.text) < int.parse(amountController.text)) && controller){
+                          controller = false;
+                          return 'Sahip olduğunuzdan fazlasını satamazsınız!';
+                        }
+                        return null;
+                      },
+                      style: const TextStyle(fontSize: 16),
+                      keyboardType: TextInputType.number,
+                      controller: amountController,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(10))
+                        ),
+                        labelText: "Miktar",
+                        labelStyle: TextStyle(fontSize: 16),
+                      ),
+                    ),
                   ),
                 ),
                 Padding(
@@ -246,7 +246,7 @@ class _StockPopUpState extends State<StockPopUp> {
                           priceController.clear();
                           amountController.clear();
 
-                          CashDataModel data = CashDataModel()..portfolio = widget.title ..cash = investProvider.returnCash(widget.title) - int.parse(amountController.text)*double.parse(priceController.text);
+                          CashDataModel data = CashDataModel()..portfolio = widget.title ..cash = investProvider.returnCash(widget.title) - int.parse(amountController.text.replaceAll(',', '.'))*double.parse(priceController.text);
                           investProvider.addToCashList(data);
                           programProvider.showSnackBar(context, "Alım işlemi başarılı");
                           Navigator.pop(context);

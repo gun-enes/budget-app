@@ -106,9 +106,10 @@ class _WatchListState extends State<WatchList> {
                       shrinkWrap: true,
                       //physics: const BouncingScrollPhysics(),
                       itemBuilder: (context, index) {
+                        int reverse = watchlist.length - 1 - index;
                         return Column(
                           children: [
-                            WatchListDataCard(data: watchlist[index], index: index),
+                            WatchListDataCard(data: watchlist[reverse], index: reverse),
                           ],
                         );
                       }

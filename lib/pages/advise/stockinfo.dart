@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
 import 'package:provider/provider.dart';
+import 'package:sql_project2/services/invest_provider.dart';
 import 'package:sql_project2/services/prediction_provider.dart';
 class StockInfo extends StatefulWidget {
   final String code;
@@ -20,6 +21,7 @@ class _StockInfoState extends State<StockInfo> {
     //ratios = getRatios(widget.code);
     getRatios(widget.code);
     PredictionProvider predictionProvider = Provider.of<PredictionProvider>(context);
+    InvestProvider investProvider = Provider.of<InvestProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text("${widget.code} Analiz"),
@@ -27,28 +29,73 @@ class _StockInfoState extends State<StockInfo> {
       body: Center(
         child: controller ? Column(
             children: [
-              Text("F/K: ${_ratios[0]}", style: const TextStyle(fontSize: 20),),
-              Text("PD/DD: ${_ratios[1]}", style: const TextStyle(fontSize: 20),),
-              Text("FD/FAVÖK: ${_ratios[2]}", style: const TextStyle(fontSize: 20),),
-              if(predictionProvider.returnAverageFK(widget.code) != -1)
-                Column(
-                  children: [
-                    Text("F/K Ortalama: ${predictionProvider.returnAverageFK(widget.code)}", style: const TextStyle(fontSize: 20),),
-                    Text("PD/DD Ortalama: ${predictionProvider.returnAveragePDDD(widget.code)}", style: const TextStyle(fontSize: 20),),
-                    Text("FD/FAVÖK Ortalama: ${predictionProvider.returnAverageFAV(widget.code)}", style: const TextStyle(fontSize: 20),),
-                    if(_ratios[0] != 'A/D' && _ratios[1] != 'A/D')
-                      Text(predictionProvider.returnPercentFK(widget.code, double.parse(_ratios[0].replaceAll(",", "."))).toStringAsFixed(2),style: const TextStyle(
-                          fontSize: 30, color: Colors.green),),
-                    Text(predictionProvider.returnPercentPDDD(widget.code, double.parse(_ratios[1].replaceAll(",", "."))).toStringAsFixed(2),style: const TextStyle(
-                        fontSize: 30, color: Colors.green),),
-
-                      Text(
-                      predictionProvider.returnAdvise(widget.code, double.parse(_ratios[0].replaceAll(",", ".")), double.parse(_ratios[1].replaceAll(",", "."))),
-                      style: const TextStyle(
-                          fontSize: 30, color: Colors.green),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 30.0,vertical: 10.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Mevcut Fiyat: ", style: TextStyle(fontSize: 20),),
+                        Text("Adil Fiyat: ", style: TextStyle(fontSize: 20),),
+                        Text("F/K: ", style: TextStyle(fontSize: 20),),
+                        Text("PD/DD: ", style: TextStyle(fontSize: 20),),
+                        Text("FD/FAVÖK: ", style: TextStyle(fontSize: 20),),
+                        Text("F/K Ortalama: ", style: TextStyle(fontSize: 20),),
+                        Text("PD/DD Ortalama: ", style: TextStyle(fontSize: 20),),
+                        Text("FD/FAVÖK Ortalama: ", style: TextStyle(fontSize: 20),),
+                        Text("F/K Standart Sapma: ", style: TextStyle(fontSize: 20),),
+                        Text("PD/DD Standart Sapma: ", style: TextStyle(fontSize: 20),),
+                        Text("FD/FAVÖK Standart Sapma: ", style: TextStyle(fontSize: 20),),
+                      ],
                     ),
-                        ],
-                ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                    child: Column(
+                      children: [
+                        Text("${investProvider.returnPrice(widget.code)}", style: const TextStyle(fontSize: 20),),
+                        if(_ratios[0] != 'A/D' && _ratios[1] != 'A/D')
+                        Text(predictionProvider.returnValuePrice(widget.code, double.parse(_ratios[0].replaceAll(",", ".")), double.parse(_ratios[1].replaceAll(",", ".")), investProvider.returnPrice(widget.code)).toStringAsFixed(2), style: TextStyle(fontSize: 20),)
+                        else
+                          const Text("-", style: TextStyle(fontSize: 20),),
+                        Text("${_ratios[0]}", style: const TextStyle(fontSize: 20),),
+                        Text("${_ratios[1]}", style: const TextStyle(fontSize: 20),),
+                        Text("${_ratios[2]}", style: const TextStyle(fontSize: 20),),
+                        Text("${predictionProvider.returnAverageFK(widget.code)}", style: const TextStyle(fontSize: 20),),
+                        Text("${predictionProvider.returnAveragePDDD(widget.code)}", style: const TextStyle(fontSize: 20),),
+                        Text("${predictionProvider.returnAverageFAV(widget.code)}", style: const TextStyle(fontSize: 20),),
+                        Text("${predictionProvider.returnStdFK(widget.code)}", style: const TextStyle(fontSize: 20),),
+                        Text("${predictionProvider.returnStdPDDD(widget.code)}", style: const TextStyle(fontSize: 20),),
+                        Text("${predictionProvider.returnStdFAV(widget.code)}", style: const TextStyle(fontSize: 20),),
+                      ],
+                    ),
+                  )
+
+                ],
+              ),/*
+              if(predictionProvider.returnAverageFK(widget.code) != -1)
+                Row(
+                  children: [
+                    Column(
+                      children: [
+                        if(_ratios[0] != 'A/D' && _ratios[1] != 'A/D')
+                          Text(predictionProvider.returnPercentFK(widget.code, double.parse(_ratios[0].replaceAll(",", "."))).toStringAsFixed(2),style: const TextStyle(
+                              fontSize: 30, color: Colors.green),),
+                        Text(predictionProvider.returnPercentPDDD(widget.code, double.parse(_ratios[1].replaceAll(",", "."))).toStringAsFixed(2),style: const TextStyle(
+                            fontSize: 30, color: Colors.green),),
+
+                        Text(
+                          predictionProvider.returnAdvise(widget.code, double.parse(_ratios[0].replaceAll(",", ".")), double.parse(_ratios[1].replaceAll(",", "."))),
+                          style: const TextStyle(
+                              fontSize: 30, color: Colors.green),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),*/
 
             ],
           ):const CircularProgressIndicator()

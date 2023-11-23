@@ -1,8 +1,10 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:provider/provider.dart';
 import 'package:sql_project2/pages/alltime/alltime.dart';
 import 'package:sql_project2/pages/navbars/bottom_nav_bar.dart';
+import 'package:sql_project2/services/firebase.dart';
 import 'package:sql_project2/services/invest_provider.dart';
 import 'package:sql_project2/services/isar_services.dart';
 import 'package:sql_project2/services/models/cash.dart';
@@ -26,8 +28,10 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterL
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  tz.initializeTimeZones();
-  Noti.initialize(flutterLocalNotificationsPlugin);
+  await Firebase.initializeApp();
+  await FirebaseApi().initNotifications();
+  //tz.initializeTimeZones();
+  //Noti.initialize(flutterLocalNotificationsPlugin);
   runApp(
       MultiProvider(providers: [
         ChangeNotifierProvider(create: (_) => ProgramProvider()),

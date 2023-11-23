@@ -4,6 +4,7 @@ import 'package:sql_project2/pages/advise/stockinfo.dart';
 import 'package:sql_project2/services/invest_provider.dart';
 import 'package:sql_project2/services/models/advice_datamodel.dart';
 import 'package:sql_project2/services/models/historical_stock_info.dart';
+import 'package:sql_project2/services/prediction_provider.dart';
 class AdviceDatacard extends StatefulWidget {
   final StockSuggestion data;
   const AdviceDatacard({Key? key, required this.data, required int index}) : super(key: key);
@@ -16,7 +17,7 @@ class _AdviceDatacardState extends State<AdviceDatacard> {
   @override
   Widget build(BuildContext context) {
     InvestProvider programProvider = Provider.of<InvestProvider>(context);
-
+    PredictionProvider predictionProvider = Provider.of<PredictionProvider>(context);
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: Padding(

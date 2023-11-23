@@ -36,12 +36,11 @@ class _ExpensesByMonthState extends State<ExpensesByMonth> {
                   shrinkWrap: true,
                   physics: const BouncingScrollPhysics(),
                   itemBuilder: (context, index) {
-                    int reverse = expenses.length - 1 - index;
                     return Column(
                       children: [
                         CategoriesDataCard(
-                          data: expenses[reverse],
-                          index: reverse,
+                          data: expenses[index],
+                          index: index,
                         ),
                         const SizedBox(height: 5,)
                       ],

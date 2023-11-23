@@ -96,7 +96,8 @@ class _AllPortfoliosState extends State<AllPortfolios> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const 
-                  Portfolio(portfolioTitle: "portfoliodatamodelxyz")),
+                  WatchList()
+                  ),
                 );
               },
               child: Padding(

@@ -28,7 +28,10 @@ class _AddIncomeState extends State<AddIncome> {
     "Maaş",
     "Borsa",
     "Burs",
-    "Diğer"
+    "Temettü",
+    "Faiz",
+    "Alım-Satım",
+    "Diğer",
   ];
 
   String? selection;

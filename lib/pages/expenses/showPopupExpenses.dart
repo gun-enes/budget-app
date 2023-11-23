@@ -25,14 +25,17 @@ class _ShowPopUpHomePageState extends State<ShowPopUpHomePage> {
 
   List<String> kategoriler = [
     "Market",
-    "Yeme - İçme",
+    "Yemek",
     "Cafe",
     "Para Çekme",
     "Borç",
-    "Fatura",
-    "Ulaşım",
+    "Su",
+    "Taksi",
+    "Giyim",
+    "Tren",
     "Taksitler",
     "Nikotin",
+    "Abonman",
     "Alkol",
     "Alışveriş",
     "Diğer"

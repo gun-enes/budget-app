@@ -30,9 +30,12 @@ class _ShowPopUpHomePageUpdateState extends State<ShowPopUpHomePageUpdate> {
     "Para Çekme",
     "Borç",
     "Su",
-    "Ulaşım",
+    "Taksi",
+    "Giyim",
+    "Tren",
     "Taksitler",
     "Nikotin",
+    "Abonman",
     "Alkol",
     "Alışveriş",
     "Diğer"

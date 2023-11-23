@@ -26,16 +26,23 @@ class _AddExpenseState extends State<AddExpense> {
 
   List<String> kategoriler = [
     "Market",
-    "Yeme - İçme",
+    "Yemek",
     "Cafe",
     "Para Çekme",
     "Borç",
-    "Fatura",
-    "Ulaşım",
+    "Su",
+    "Taksi",
+    "Giyim",
+    "Eğlence",
+    "Berber",
+    "Tren",
+    "Uçak",
     "Taksitler",
     "Nikotin",
+    "Abonman",
     "Alkol",
     "Alışveriş",
+    "Otobüs",
     "Diğer"
   ];
 

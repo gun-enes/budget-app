@@ -37,10 +37,11 @@ class _NavigasyonBarState extends State<NavigasyonBar> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         onTap: (index){
+          _pageController.jumpToPage(index);/*
           _pageController.animateToPage(
               index,
               duration: Duration(milliseconds: 150),
-          curve: Curves.ease,);
+          curve: Curves.bounceIn,);*/
         },
         selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,

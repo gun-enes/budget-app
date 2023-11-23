@@ -26,9 +26,12 @@ class _EditExpenseState extends State<EditExpense> {
     "Para Çekme",
     "Borç",
     "Su",
-    "Ulaşım",
+    "Taksi",
+    "Giyim",
+    "Tren",
     "Taksitler",
     "Nikotin",
+    "Abonman",
     "Alkol",
     "Alışveriş",
     "Diğer"

@@ -12,7 +12,7 @@ class InvestProvider extends ChangeNotifier {
   bool controller = false;
   int stockCount = 0;
   bool isCheckedForPrice = true;
-  bool isCheckedForDollar = false;
+  bool isCheckedForDollar = true;
 
   String _bist = "-";
   String get bist => _bist;
@@ -185,8 +185,7 @@ class InvestProvider extends ChangeNotifier {
     double total = 0;
     for (final para in portfolio) {
       if (para.portfolio.toUpperCase() == name.toUpperCase()) {
-        total +=
-            (returnPrice(para.title) * para.amount)/double.parse(bist) - (para.amount * para.price)/para.bist;
+        total += (returnPrice(para.title) * para.amount)/double.parse(bist) - (para.amount * para.price)/para.bist;
       }
     }
     return total;
